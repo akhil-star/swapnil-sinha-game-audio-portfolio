@@ -45,26 +45,6 @@ function AudioSample({ src, title, activeId, onActiveChange }) {
   )
 }
 
-function VideoPreview({ work }) {
-  const [failed, setFailed] = useState(false)
-
-  if (failed) {
-    return (
-      <div className="video-fallback">
-        <img src={work.poster} alt="Abstract mixing console artwork" />
-        <span>VIDEO PREVIEW UNAVAILABLE ON THIS HOST</span>
-      </div>
-    )
-  }
-
-  return (
-    <video controls preload="metadata" poster={work.poster} className="captured-item__video" onError={() => setFailed(true)}>
-      <source src={work.src} type="video/mp4" />
-      Your browser does not support video playback.
-    </video>
-  )
-}
-
 export default function CapturedWorks() {
   const count = capturedWorkGroups.reduce((total, group) => total + group.works.length, 0)
   const [activeSample, setActiveSample] = useState(null)
@@ -119,18 +99,15 @@ export default function CapturedWorks() {
             <div className="captured-grid">
               {group.works.map((work) => (
                 <article className="captured-item" key={work.src}>
+                  {work.cover && <img className="captured-item__cover" src={work.cover} alt={work.coverAlt || ''} />}
                   <div className="captured-item__title">{work.title}</div>
                   {work.detail && <p>{work.detail}</p>}
-                  {group.type === 'video' ? (
-                    <VideoPreview work={work} />
-                  ) : (
-                    <AudioSample
-                      src={work.src}
-                      title={work.title}
-                      activeId={activeSample}
-                      onActiveChange={setActiveSample}
-                    />
-                  )}
+                  <AudioSample
+                    src={work.src}
+                    title={work.title}
+                    activeId={activeSample}
+                    onActiveChange={setActiveSample}
+                  />
                 </article>
               ))}
             </div>
