@@ -82,28 +82,38 @@ function Spectrum() {
 export default function Hero() {
   const trackRef = useRef(null)
   const [musicOn, setMusicOn] = useState(false)
+  const [musicError, setMusicError] = useState(false)
 
   const toggleBackground = async () => {
     const track = trackRef.current
     if (!track) return
-    if (musicOn) {
+    if (!track.paused) {
       track.pause()
-      setMusicOn(false)
       return
     }
     track.volume = 0.12
+    setMusicError(false)
     try {
       await track.play()
       setMusicOn(true)
     } catch {
       setMusicOn(false)
+      setMusicError(true)
     }
   }
 
   return (
     <header className="hero" id="top">
-      <audio ref={trackRef} loop preload="metadata">
-        <source src="/captured/mixing-mastering/Cigarettes%20after%20Sex%20-%20Sunsetz%20(Cover).wav" type="audio/wav" />
+      <audio
+        ref={trackRef}
+        loop
+        preload="metadata"
+        onPlay={() => setMusicOn(true)}
+        onPause={() => setMusicOn(false)}
+        onEnded={() => setMusicOn(false)}
+        onError={() => { setMusicOn(false); setMusicError(true) }}
+      >
+        <source src="/audio/cigarettes-after-sex-sunsetz-cover.wav" type="audio/wav" />
       </audio>
       <Spectrum />
       <div className="hero__scrim" />
@@ -133,7 +143,7 @@ export default function Hero() {
               aria-pressed={musicOn}
             >
               <span className={musicOn ? 'led led--on' : 'led'} aria-hidden="true" />
-              {musicOn ? 'BACKGROUND ON' : 'PLAY BACKGROUND'}
+              {musicError ? 'BACKGROUND UNAVAILABLE' : musicOn ? 'BACKGROUND ON' : 'PLAY BACKGROUND'}
             </button>
             <a className="btn btn--solid" href={links.youtube} target="_blank" rel="noreferrer noopener">
               My channel ↗

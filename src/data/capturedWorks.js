@@ -1,4 +1,9 @@
-const media = (category, file) => `/captured/${category}/${encodeURIComponent(file)}`
+// Captured source files are stored in Git LFS. GitHub's media endpoint serves
+// the actual bytes (including range requests) even when a static host serves
+// the small LFS pointer file instead.
+const mediaRepository = 'akhil-star/swapnil-sinha-game-audio-portfolio'
+const media = (category, file) =>
+  `https://media.githubusercontent.com/media/${mediaRepository}/main/public/captured/${category}/${encodeURIComponent(file)}`
 
 export const youtubeReels = [
   {
