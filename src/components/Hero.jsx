@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { identity, links } from '../data/site'
 
+const backgroundTrack =
+  'https://media.githubusercontent.com/media/akhil-star/swapnil-sinha-game-audio-portfolio/main/public/captured/mixing-mastering/Cigarettes%20after%20Sex%20-%20Sunsetz%20(Cover).wav'
+
 /**
  * A slow waveform keeps the page's motion language without asking a visitor
  * to enable a synthetic audio demo.
@@ -113,7 +116,7 @@ export default function Hero() {
         onEnded={() => setMusicOn(false)}
         onError={() => { setMusicOn(false); setMusicError(true) }}
       >
-        <source src="/audio/cigarettes-after-sex-sunsetz-cover.wav" type="audio/wav" />
+        <source src={backgroundTrack} type="audio/wav" />
       </audio>
       <Spectrum />
       <div className="hero__scrim" />
