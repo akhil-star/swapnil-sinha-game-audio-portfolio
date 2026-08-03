@@ -999,6 +999,7 @@ button {
   background: var(--panel);
 }
 .captured-group__head {
+  position: relative;
   display: flex;
   align-items: end;
   justify-content: space-between;
@@ -1006,6 +1007,17 @@ button {
   padding: 20px;
   border-bottom: 1px solid var(--line);
   background: var(--panel-2);
+}
+.captured-group__head > div,
+.captured-group__head > span { position: relative; z-index: 1; }
+.captured-group__art {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: min(42%, 520px);
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.44;
+  mask-image: linear-gradient(90deg, transparent, black 24%);
 }
 .captured-group__head h3 {
   margin: 5px 0 0;
@@ -1025,7 +1037,7 @@ button {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1px;
-  background: var(--line);
+  background: var(--panel);
 }
 .captured-item {
   min-width: 0;
@@ -1049,6 +1061,30 @@ button {
   display: block;
   width: 100%;
   margin-top: 14px;
+}
+.video-fallback {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  margin-top: 14px;
+  background: #000;
+}
+.video-fallback::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(8, 9, 11, 0.18), rgba(8, 9, 11, 0.62));
+}
+.video-fallback img { width: 100%; height: 100%; object-fit: cover; }
+.video-fallback span {
+  position: absolute;
+  z-index: 1;
+  right: 14px;
+  bottom: 12px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--text);
 }
 .sample-play {
   display: inline-flex;
@@ -1114,6 +1150,7 @@ button {
   .captured-grid { grid-template-columns: 1fr; }
   .captured-item { padding: 16px; }
   .sample-play { width: 100%; justify-content: center; min-height: 42px; }
+  .captured-group__art { width: 62%; opacity: 0.28; }
 }
 
 /* ── Pipeline ───────────────────────────────────────────────────────────── */

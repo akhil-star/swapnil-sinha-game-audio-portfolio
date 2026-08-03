@@ -28,12 +28,14 @@ export const capturedWorkGroups = [
     id: 'score-sound-design',
     label: 'Score & Sound Design',
     note: 'Film, game, promos and ads',
+    artwork: '/artwork/mixing-mastering-console.png',
     type: 'video',
     works: [
       {
         title: 'BKR–DKR',
         detail: 'Supplied film / promo / ad reel.',
         src: media('score-sound-design', 'BKR-DKR_Mix_16Jan.mp4'),
+        poster: '/artwork/mixing-mastering-console.png',
       },
     ],
   },
@@ -41,6 +43,7 @@ export const capturedWorkGroups = [
     id: 'music-production',
     label: 'Music Production',
     note: 'Original sketches, ideas and productions',
+    artwork: '/artwork/music-production-studio.png',
     type: 'audio',
     works: [
       'E ionian Aug Sickkkk.mp3', '+-=.mp3', 'DayDreamer - New Chapter.mp3',
@@ -52,6 +55,7 @@ export const capturedWorkGroups = [
     id: 'mixing-mastering',
     label: 'Mixing & Mastering',
     note: 'Selected delivered mixes and masters',
+    artwork: '/artwork/mixing-mastering-console.png',
     type: 'audio',
     works: [
       'Jammu Da Shahar - Virender Kapadia (Master)_.mp3', 'Swapnil Sinha, 2022, A walk..mp3',

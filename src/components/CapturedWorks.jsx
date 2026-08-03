@@ -45,6 +45,26 @@ function AudioSample({ src, title, activeId, onActiveChange }) {
   )
 }
 
+function VideoPreview({ work }) {
+  const [failed, setFailed] = useState(false)
+
+  if (failed) {
+    return (
+      <div className="video-fallback">
+        <img src={work.poster} alt="Abstract mixing console artwork" />
+        <span>VIDEO PREVIEW UNAVAILABLE ON THIS HOST</span>
+      </div>
+    )
+  }
+
+  return (
+    <video controls preload="metadata" poster={work.poster} className="captured-item__video" onError={() => setFailed(true)}>
+      <source src={work.src} type="video/mp4" />
+      Your browser does not support video playback.
+    </video>
+  )
+}
+
 export default function CapturedWorks() {
   const count = capturedWorkGroups.reduce((total, group) => total + group.works.length, 0)
   const [activeSample, setActiveSample] = useState(null)
@@ -94,6 +114,7 @@ export default function CapturedWorks() {
                 <h3>{group.label}</h3>
               </div>
               <span>{group.works.length} {group.works.length === 1 ? 'PIECE' : 'PIECES'}</span>
+              {group.artwork && <img className="captured-group__art" src={group.artwork} alt="" />}
             </div>
             <div className="captured-grid">
               {group.works.map((work) => (
@@ -101,10 +122,7 @@ export default function CapturedWorks() {
                   <div className="captured-item__title">{work.title}</div>
                   {work.detail && <p>{work.detail}</p>}
                   {group.type === 'video' ? (
-                    <video controls preload="metadata" className="captured-item__video">
-                      <source src={work.src} type="video/mp4" />
-                      Your browser does not support video playback.
-                    </video>
+                    <VideoPreview work={work} />
                   ) : (
                     <AudioSample
                       src={work.src}
