@@ -1,0 +1,7 @@
+{
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  "files.associations": { "*.css": "css" },
+  "css.lint.unknownAtRules": "ignore",
+  "search.exclude": { "**/node_modules": true, "**/dist": true }
+}

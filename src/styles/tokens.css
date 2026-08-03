@@ -1,0 +1,58 @@
+/**
+ * Design tokens.
+ *
+ * Direction: an audio middleware inspector, not a music streaming page.
+ * Panels, hairlines, mono readouts, meters. Colour is used as signal —
+ * cyan carries state, violet carries music, amber carries warnings.
+ */
+:root {
+  /* Surface */
+  --void: #08090b;
+  --panel: #0e1014;
+  --panel-2: #14171c;
+  --rail: #1b1f26;
+  --line: rgba(240, 244, 248, 0.09);
+  --line-strong: rgba(240, 244, 248, 0.18);
+
+  /* Ink */
+  --text: #f0f3f6;
+  --dim: #8a929c;
+  --dimmer: #5c646e;
+
+  /* Signal */
+  --signal: #00c8ff;
+  --signal-dim: rgba(0, 200, 255, 0.14);
+  --music: #7a5af8;
+  --music-dim: rgba(122, 90, 248, 0.16);
+  --warn: #ffb020;
+  --warn-dim: rgba(255, 176, 32, 0.14);
+
+  /* Type */
+  --display: 'Instrument Serif', Georgia, serif;
+  --body: 'Inter', system-ui, -apple-system, sans-serif;
+  --mono: 'IBM Plex Mono', 'SF Mono', Menlo, monospace;
+
+  /* Rhythm */
+  --gutter: clamp(20px, 4vw, 56px);
+  --section-y: clamp(72px, 11vh, 132px);
+  --radius: 3px;
+  --radius-lg: 6px;
+
+  /* Motion */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --fast: 160ms;
+  --slow: 520ms;
+}
+
+[data-accent='cyan'] {
+  --accent: var(--signal);
+  --accent-dim: var(--signal-dim);
+}
+[data-accent='violet'] {
+  --accent: var(--music);
+  --accent-dim: var(--music-dim);
+}
+[data-accent='amber'] {
+  --accent: var(--warn);
+  --accent-dim: var(--warn-dim);
+}
