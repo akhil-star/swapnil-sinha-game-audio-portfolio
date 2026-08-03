@@ -9,7 +9,7 @@
  * /public/media, then flip USE_LOCAL_MEDIA to true. After that the site is
  * fully self-hosted and nothing can 404 on you during an interview.
  */
-export const USE_LOCAL_MEDIA = false
+export const USE_LOCAL_MEDIA = true
 
 export const resolveMedia = (remoteUrl, localName) =>
   USE_LOCAL_MEDIA ? `/media/${localName}` : remoteUrl
