@@ -29,8 +29,8 @@
 
   /* Type */
   --display: 'Instrument Serif', Georgia, serif;
-  --body: 'Inter', system-ui, -apple-system, sans-serif;
-  --mono: 'IBM Plex Mono', 'SF Mono', Menlo, monospace;
+  --body: 'Manrope', system-ui, -apple-system, sans-serif;
+  --mono: 'Manrope', system-ui, -apple-system, sans-serif;
 
   /* Rhythm */
   --gutter: clamp(20px, 4vw, 56px);
