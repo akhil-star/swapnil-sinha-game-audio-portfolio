@@ -4,22 +4,22 @@ export const youtubeReels = [
   {
     title: 'FPS Microgame Sound Design | Unity + FMOD',
     videoId: 'ZbYTQvhNOa0',
-    thumbnail: '/captured/youtube/fps-microgame.jpg',
+    thumbnail: 'https://i.ytimg.com/vi/ZbYTQvhNOa0/maxresdefault.jpg',
   },
   {
     title: 'Game Sound Design DemoReel (2024)',
     videoId: 'A8HKA82_aiQ',
-    thumbnail: '/captured/youtube/game-sound-demoreel-2024.jpg',
+    thumbnail: 'https://i.ytimg.com/vi/A8HKA82_aiQ/maxresdefault.jpg',
   },
   {
     title: 'Creature Re-Sound Design Demo Reel',
     videoId: 'G22mdl-vOJY',
-    thumbnail: '/captured/youtube/creature-resound.jpg',
+    thumbnail: 'https://i.ytimg.com/vi/G22mdl-vOJY/maxresdefault.jpg',
   },
   {
     title: 'Genshin Impact Re-Sound Design',
     videoId: 'xJOebMmU0F0',
-    thumbnail: '/captured/youtube/genshin-resound.jpg',
+    thumbnail: 'https://i.ytimg.com/vi/xJOebMmU0F0/maxresdefault.jpg',
   },
 ]
 
