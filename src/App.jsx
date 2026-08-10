@@ -1,33 +1,41 @@
 import { useReveal } from './components/ui'
-
+import { SoundProvider } from './components/SoundContext'
 import Nav from './components/Nav'
 import Hero from './components/Hero'
-import CapturedWorks from './components/CapturedWorks'
+import ChannelReels from './components/ChannelReels'
+import Reel from './components/Reel'
 import ShippedWork from './components/ShippedWork'
+import UnderTheHood from './components/UnderTheHood'
+import SoundLibrary from './components/SoundLibrary'
+import MusicProduction from './components/MusicProduction'
+import Process from './components/Process'
+import CapturedWorks from './components/CapturedWorks'
 import Experience from './components/Experience'
 import Contact from './components/Contact'
+import WorldBackdrop from './components/WorldBackdrop'
 
-/**
- * Section order is deliberate and answers the hiring question in sequence:
- * can you make it → at what scale → what shipped → how do you think →
- * can I hear it → can you engineer it → can I try it → can you ship it →
- * who are you → how do I reach you.
- *
- * "About" sits near the bottom on purpose. Nobody hiring reads it first.
- */
 function Page() {
   const root = useReveal()
   return (
-    <div ref={root}>
-      <Nav />
-      <main>
-        <Hero />
-        <CapturedWorks />
-        <ShippedWork />
-        <Experience />
-        <Contact />
-      </main>
-    </div>
+    <SoundProvider>
+      <div ref={root}>
+        <WorldBackdrop />
+        <Nav />
+        <main>
+          <Hero />
+          <ChannelReels />
+          <Reel />
+          <ShippedWork />
+          <UnderTheHood />
+          <SoundLibrary />
+          <MusicProduction />
+          <Process />
+          <CapturedWorks />
+          <Experience />
+          <Contact />
+        </main>
+      </div>
+    </SoundProvider>
   )
 }
 

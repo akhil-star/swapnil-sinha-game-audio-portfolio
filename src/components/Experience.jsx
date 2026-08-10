@@ -7,68 +7,63 @@ export default function Experience() {
     <>
       <Section id="experience">
         <ModuleHeader
-          id="05 / EXPERIENCE"
-          title="Where the hours went"
-          sub="Six years across games, promo, and post. Every role below involved shipping to a deadline that was not mine to move."
-          status={<a href={identity.resumePdf} download>DOWNLOAD RESUME ↓</a>}
+          id="10 / EXPERIENCE"
+          title="EXPERIENCE"
+          sub="Games, promotional work and post-production—shipped with developers, voice artists and production teams."
+          status={
+            <a href={identity.resumePdf} download>
+              DOWNLOAD RESUME ↓
+            </a>
+          }
         />
 
-        <div className="timeline">
-          {experience.map((job) => (
-            <div className="job" key={job.company} data-reveal>
-              <div className="job__period">
-                <span className={job.current ? 'led led--on' : 'led'} />
-                {job.period.toUpperCase()}
-              </div>
-              <div>
-                <h3 className="job__role">{job.role}</h3>
-                <div className="job__company">{job.company.toUpperCase()}</div>
-                <ul>
-                  {job.points.map((p) => (
-                    <li key={p}>{p}</li>
-                  ))}
-                </ul>
-              </div>
+        <div className="experience-layout">
+          <div>
+            <div className="experience-kicker">PROFESSIONAL EXPERIENCE · {experience.length}</div>
+            <div className="experience-grid">
+              {experience.map((job, index) => (
+                <article className="job" key={job.company}>
+                  <header className="job__header">
+                    <span className="job__index">0{index + 1}</span>
+                    <div className="job__period">
+                      <span className={job.current ? 'led led--on' : 'led'} />
+                      {job.period.toUpperCase()}
+                    </div>
+                  </header>
+                  <div>
+                    <div className="job__company">{job.company.toUpperCase()}</div>
+                    <h3 className="job__role">{job.role}</h3>
+                    <ul>
+                      {job.points.map((p) => (
+                        <li key={p}>{p}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </article>
+              ))}
             </div>
-          ))}
+          </div>
 
-          {education.map((e) => (
-            <div className="job" key={e.school} data-reveal>
-              <div className="job__period">
-                <span className="led" />
-                {e.period.toUpperCase()}
-              </div>
-              <div>
-                <h3 className="job__role">{e.qualification}</h3>
-                <div className="job__company">{e.school.toUpperCase()}</div>
-              </div>
+          <aside className="education-column">
+            <div className="experience-kicker">EDUCATION · {education.length}</div>
+            <div className="education-panel">
+              {education.map((item) => (
+                <article className="education-card" key={item.school}>
+                  <span>{item.period.toUpperCase()}</span>
+                  <h3>{item.qualification}</h3>
+                  <p>{item.school}</p>
+                </article>
+              ))}
             </div>
-          ))}
+          </aside>
         </div>
 
-        <div style={{ marginTop: 40, display: 'grid', gap: 18 }}>
+        <div className="toolkit-panel">
           <div className="eyebrow">TOOLS, BY THE JOB THEY DO</div>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              gap: 20,
-            }}
-          >
+          <div className="toolkit-grid">
             {Object.entries(toolchain).map(([group, items]) => (
-              <div key={group}>
-                <div
-                  style={{
-                    fontFamily: 'var(--mono)',
-                    fontSize: 10,
-                    letterSpacing: '0.18em',
-                    color: 'var(--dimmer)',
-                    marginBottom: 10,
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  {group}
-                </div>
+              <div className="toolkit-group" key={group}>
+                <div className="toolkit-group__label">{group}</div>
                 <Chips items={items} />
               </div>
             ))}
@@ -77,7 +72,17 @@ export default function Experience() {
       </Section>
 
       <Section id="about">
-        <ModuleHeader id="06 / APPROACH" title="How I think about it" status={identity.location.toUpperCase()} />
+        <ModuleHeader
+          id="11 / ABOUT"
+          title={
+            <>
+              FIELD RECORDINGS,
+              <br />
+              <em>INTERACTIVE WORLDS.</em>
+            </>
+          }
+          status={identity.location.toUpperCase()}
+        />
         <div
           style={{
             display: 'grid',
@@ -107,11 +112,15 @@ export default function Experience() {
           </p>
         </div>
         <div style={{ marginTop: 40 }} data-reveal>
-          <div className="eyebrow" style={{ marginBottom: 14 }}>WHAT I KEEP IN MIND</div>
+          <div className="eyebrow" style={{ marginBottom: 14 }}>
+            WHAT I KEEP IN MIND
+          </div>
           <div className="cards">
             {philosophy.principles.map((principle) => (
               <div className="card" key={principle}>
-                <p className="card__text" style={{ margin: 0 }}>{principle}</p>
+                <p className="card__text" style={{ margin: 0 }}>
+                  {principle}
+                </p>
               </div>
             ))}
           </div>

@@ -1,168 +1,237 @@
-import { useEffect, useRef, useState } from 'react'
-import { identity, links } from '../data/site'
+import { useEffect, useRef } from 'react'
+import { assetPath } from '../utils/assets'
+import { useSound } from './SoundContext'
 
-const backgroundTrack =
-  'https://media.githubusercontent.com/media/akhil-star/swapnil-sinha-game-audio-portfolio/main/public/captured/mixing-mastering/Cigarettes%20after%20Sex%20-%20Sunsetz%20(Cover).wav'
-
-/**
- * A slow waveform keeps the page's motion language without asking a visitor
- * to enable a synthetic audio demo.
- */
-function Spectrum() {
+function Signal() {
   const canvasRef = useRef(null)
   useEffect(() => {
     const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    let raf
-    let t = 0
-
+    const ctx = canvas?.getContext('2d')
+    if (!ctx) return
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
+    let raf = 0,
+      time = 0,
+      pointer = 0.5,
+      visible = false
     const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2)
-      canvas.width = canvas.offsetWidth * dpr
-      canvas.height = canvas.offsetHeight * dpr
+      const dpr = Math.min(devicePixelRatio || 1, 2)
+      canvas.width = canvas.clientWidth * dpr
+      canvas.height = canvas.clientHeight * dpr
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     }
-    resize()
-    window.addEventListener('resize', resize)
-
-    const draw = () => {
-      const w = canvas.offsetWidth
-      const h = canvas.offsetHeight
-      ctx.clearRect(0, 0, w, h)
-      t += reduce ? 0 : 0.006
-
-      const cols = Math.max(48, Math.floor(w / 11))
-      const mid = h * 0.62
-
-      ctx.lineWidth = 1
-      for (let i = 0; i < cols; i++) {
-        const u = i / cols
-        let amp
-
-        amp =
-          (Math.sin(u * 9 + t * 3.1) * 0.32 +
-            Math.sin(u * 23 - t * 1.7) * 0.2 +
-            Math.sin(u * 51 + t * 4.3) * 0.1 +
-            0.34) *
-          (0.35 + 0.65 * Math.sin(u * Math.PI))
-
-        const barH = Math.max(1.5, amp * h * 0.5)
-        const x = u * w + 3
-
-        const grad = ctx.createLinearGradient(0, mid - barH, 0, mid + barH)
-        grad.addColorStop(0, 'rgba(122,90,248,0.55)')
-        grad.addColorStop(0.5, 'rgba(0,200,255,0.85)')
-        grad.addColorStop(1, 'rgba(122,90,248,0.35)')
-        ctx.strokeStyle = grad
-        ctx.beginPath()
-        ctx.moveTo(x, mid - barH)
-        ctx.lineTo(x, mid + barH * 0.62)
-        ctx.stroke()
-      }
-
-      // Centre line, like a waveform editor
-      ctx.strokeStyle = 'rgba(240,244,248,0.07)'
-      ctx.beginPath()
-      ctx.moveTo(0, mid)
-      ctx.lineTo(w, mid)
-      ctx.stroke()
-
-      raf = requestAnimationFrame(draw)
+    const move = (e) => {
+      pointer = e.clientX / innerWidth
     }
-    raf = requestAnimationFrame(draw)
-
+    const draw = () => {
+      const w = canvas.clientWidth,
+        h = canvas.clientHeight,
+        mid = h * 0.55
+      ctx.clearRect(0, 0, w, h)
+      time += reduced ? 0 : 0.008
+      ctx.beginPath()
+      for (let x = 0; x <= w; x += 4) {
+        const u = x / w,
+          envelope = Math.sin(u * Math.PI),
+          proximity = 1 + Math.max(0, 1 - Math.abs(u - pointer) * 5) * 0.32
+        const y =
+          mid +
+          (Math.sin(u * 18 + time) * 0.55 +
+            Math.sin(u * 43 - time * 1.7) * 0.25 +
+            Math.sin(u * 91 + time * 0.6) * 0.1) *
+            h *
+            0.15 *
+            envelope *
+            proximity
+        x ? ctx.lineTo(x, y) : ctx.moveTo(x, y)
+      }
+      ctx.strokeStyle = 'rgba(52,231,220,.68)'
+      ctx.lineWidth = 1.35
+      ctx.stroke()
+      if (!reduced && visible) raf = requestAnimationFrame(draw)
+    }
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting
+      if (visible && !raf) draw()
+      if (!visible) {
+        cancelAnimationFrame(raf)
+        raf = 0
+      }
+    })
+    resize()
+    observer.observe(canvas)
+    addEventListener('resize', resize)
+    if (!reduced) addEventListener('pointermove', move, { passive: true })
     return () => {
+      observer.disconnect()
       cancelAnimationFrame(raf)
-      window.removeEventListener('resize', resize)
+      removeEventListener('resize', resize)
+      if (!reduced) removeEventListener('pointermove', move)
     }
   }, [])
-
-  return <canvas className="hero__canvas" ref={canvasRef} aria-hidden="true" />
+  return <canvas ref={canvasRef} className="hero__canvas" aria-hidden="true" />
 }
 
 export default function Hero() {
-  const trackRef = useRef(null)
-  const [musicOn, setMusicOn] = useState(false)
-  const [musicError, setMusicError] = useState(false)
+  const heroRef = useRef(null)
+  const characterRef = useRef(null)
+  const audioContextRef = useRef(null)
+  const { soundOn } = useSound()
 
-  const toggleBackground = async () => {
-    const track = trackRef.current
-    if (!track) return
-    if (!track.paused) {
-      track.pause()
-      return
+  const playBlob = (pan = 0) => {
+    if (!soundOn) return
+    const AudioContext = window.AudioContext || window.webkitAudioContext
+    if (!AudioContext) return
+    const context = audioContextRef.current || new AudioContext()
+    audioContextRef.current = context
+    if (context.state === 'suspended') context.resume()
+    const now = context.currentTime
+    const oscillator = context.createOscillator()
+    const gain = context.createGain()
+    const filter = context.createBiquadFilter()
+    const panner = context.createStereoPanner?.()
+    oscillator.type = 'sine'
+    oscillator.frequency.setValueAtTime(165, now)
+    oscillator.frequency.exponentialRampToValueAtTime(74, now + 0.19)
+    filter.type = 'lowpass'
+    filter.frequency.setValueAtTime(620, now)
+    gain.gain.setValueAtTime(0.0001, now)
+    gain.gain.exponentialRampToValueAtTime(0.055, now + 0.018)
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.22)
+    oscillator.connect(filter)
+    filter.connect(gain)
+    if (panner) {
+      panner.pan.value = Math.max(-0.7, Math.min(0.7, pan))
+      gain.connect(panner)
+      panner.connect(context.destination)
+    } else {
+      gain.connect(context.destination)
     }
-    track.volume = 0.12
-    setMusicError(false)
-    try {
-      await track.play()
-      setMusicOn(true)
-    } catch {
-      setMusicOn(false)
-      setMusicError(true)
-    }
+    oscillator.start(now)
+    oscillator.stop(now + 0.24)
   }
 
+  const moveReveal = (event) => {
+    const character = characterRef.current
+    if (!character) return
+    const bounds = character.getBoundingClientRect()
+    const x = ((event.clientX - bounds.left) / bounds.width) * 100
+    const y = ((event.clientY - bounds.top) / bounds.height) * 100
+    character.style.setProperty('--reveal-x', `${x}%`)
+    character.style.setProperty('--reveal-y', `${y}%`)
+  }
+  useEffect(() => {
+    const hero = heroRef.current
+    if (
+      !hero ||
+      matchMedia('(prefers-reduced-motion: reduce)').matches ||
+      matchMedia('(max-width: 768px)').matches
+    )
+      return
+    let raf = 0
+    const update = () => {
+      raf = 0
+      const progress = Math.min(
+        1,
+        Math.max(0, -hero.getBoundingClientRect().top / hero.offsetHeight),
+      )
+      hero.style.setProperty('--hero-scroll', progress)
+    }
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update)
+    }
+    addEventListener('scroll', onScroll, { passive: true })
+    update()
+    return () => {
+      cancelAnimationFrame(raf)
+      removeEventListener('scroll', onScroll)
+    }
+  }, [])
+  useEffect(
+    () => () => {
+      audioContextRef.current?.close()
+    },
+    [],
+  )
   return (
-    <header className="hero" id="top">
-      <audio
-        ref={trackRef}
-        loop
-        preload="metadata"
-        onPlay={() => setMusicOn(true)}
-        onPause={() => setMusicOn(false)}
-        onEnded={() => setMusicOn(false)}
-        onError={() => { setMusicOn(false); setMusicError(true) }}
+    <header className="hero" id="top" ref={heroRef}>
+      <Signal />
+      <div
+        ref={characterRef}
+        className="hero-character"
+        aria-hidden="true"
+        style={{
+          '--hero-character-image': `url(${assetPath('artwork/swapnil-signal-character-glass-v2.jpg')})`,
+        }}
       >
-        <source src={backgroundTrack} type="audio/wav" />
-      </audio>
-      <Spectrum />
+        <img
+          className="hero-character__base"
+          src={assetPath('artwork/swapnil-signal-character-glass-v2.jpg')}
+          alt=""
+          fetchpriority="high"
+        />
+        <img
+          className="hero-character__reveal"
+          src={assetPath('artwork/swapnil-signal-character-glass-v2.jpg')}
+          alt=""
+          aria-hidden="true"
+        />
+        <span
+          className="hero-character__face-map"
+          onPointerEnter={(event) => {
+            moveReveal(event)
+            characterRef.current?.classList.add('is-revealing')
+            const bounds = event.currentTarget.getBoundingClientRect()
+            playBlob(((event.clientX - bounds.left) / bounds.width) * 2 - 1)
+          }}
+          onPointerMove={moveReveal}
+          onPointerLeave={() => characterRef.current?.classList.remove('is-revealing')}
+        />
+        <span className="hero-character__lens" />
+        <span className="hero-character__glitch" />
+        <span className="hero-character__note">
+          SIGNAL // 001
+          <br />
+          SWAPNIL.SINHA
+          <br />
+          AUDIO SYSTEM ONLINE
+        </span>
+      </div>
       <div className="hero__scrim" />
       <div className="shell hero__inner">
-        <div className="eyebrow">
-          <span style={{ color: 'var(--signal)' }}>—</span> {identity.roles.join(' · ')}
-        </div>
-
-        <h1 className="hero__title">
-          Before players see it,
+        <p className="hero__name">SWAPNIL SINHA</p>
+        <p className="hero__role">
+          Sound Designer <span>·</span> Technical Sound Designer <span>·</span> Music Composer
+        </p>
+        <h1 className="hero__title hero__title--voice">
+          I MAKE GAMES SOUND
           <br />
-          they often <em>hear it.</em>
+          LIKE THEY BELONG
           <br />
+          <em>TO THEIR WORLD.</em>
         </h1>
-
         <div className="hero__grid">
           <p className="hero__lede">
-            Hi, I&apos;m Swapnil. I design, compose and implement game audio for the moments a
-            player notices before they have words for them — from the first sketch to the build
-            in <strong>FMOD</strong> and <strong>Unity</strong>.
+            I design, compose and implement game audio with <strong>FMOD + Unity</strong>.
           </p>
-
           <div className="hero__cta">
-            <button
-              className={musicOn ? 'btn btn--armed' : 'btn'}
-              onClick={toggleBackground}
-              aria-pressed={musicOn}
-            >
-              <span className={musicOn ? 'led led--on' : 'led'} aria-hidden="true" />
-              {musicError ? 'BACKGROUND UNAVAILABLE' : musicOn ? 'BACKGROUND ON' : 'PLAY BACKGROUND'}
-            </button>
-            <a className="btn btn--solid" href={links.youtube} target="_blank" rel="noreferrer noopener">
-              My channel ↗
+            <a className="btn btn--solid" href="#reel">
+              ▶ Play game audio reel
             </a>
             <a className="btn" href="#work">
-              Explore projects
+              View shipped games ↓
             </a>
           </div>
-
-          <div className="eyebrow" style={{ textAlign: 'right', lineHeight: 1.9 }}>
-            {identity.location}
-            <br />
-            {identity.timezone}
-            <br />
-            <span style={{ color: 'var(--signal)' }}>Open to new work</span>
-          </div>
+          <p className="hero__disciplines">
+            FMOD <span>/</span> UNITY <span>/</span> REAPER <span>/</span> ABLETON
+          </p>
+        </div>
+        <div className="hero__system" aria-hidden="true">
+          <span>GAME AUDIO SYSTEM</span>
+          <i />
+          <span>DESIGN</span>
+          <span>IMPLEMENT</span>
+          <span>PLAYTEST</span>
+          <strong>READY</strong>
         </div>
       </div>
     </header>
