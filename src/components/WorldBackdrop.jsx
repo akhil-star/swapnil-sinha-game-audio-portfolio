@@ -10,9 +10,8 @@ export default function WorldBackdrop() {
 
     let frame = 0
     const update = () => {
-      const range = Math.max(1, document.documentElement.scrollHeight - innerHeight)
-      const progress = Math.min(1, Math.max(0, scrollY / range))
-      backdrop.style.setProperty('--world-shift', `${(progress - 0.5) * 90}px`)
+      const shift = Math.max(-56, Math.min(128, -40 + scrollY * 0.045))
+      backdrop.style.setProperty('--world-shift', `${shift}px`)
       frame = 0
     }
     const onScroll = () => {
