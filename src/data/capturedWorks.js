@@ -7,9 +7,10 @@ export const youtubeReels = [
     thumbnail: assetPath('media/reel-fps-microgame.jpg'),
   },
   {
-    title: 'Game Sound Design DemoReel (2024)',
+    title: 'Game Audio Reel (2024)',
     videoId: 'A8HKA82_aiQ',
     thumbnail: assetPath('media/reel-game-audio-2024.jpg'),
+    featured: true,
   },
   {
     title: 'Creature Re-Sound Design Demo Reel',

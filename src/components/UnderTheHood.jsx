@@ -2,10 +2,13 @@ import { Section, ModuleHeader } from './ui'
 
 const systems = [
   [
-    'FMOD',
-    'Dynamic music, event logic, bus processing and implementation for Rahasya and The CodeBreakers.',
+    'AUDIO MIDDLEWARE (WWISE / FMOD)',
+    'Audio implementation, event systems, adaptive audio, parameter-driven logic, routing, mixing, and runtime audio control.',
   ],
-  ['UNITY', 'Connecting audio behaviour to gameplay, then profiling and tuning it in the build.'],
+  [
+    'UNITY & UNREAL',
+    'Connecting audio behaviour to gameplay, then profiling and tuning it in the game build.',
+  ],
   [
     'EVENTS + PARAMETERS',
     'Alert level, creature proximity, health and surface type drive changes the player can hear.',
@@ -16,13 +19,6 @@ const systems = [
     'GIT + ASSET HANDOFF',
     'Naming and source-control habits that let audio move with the rest of the team.',
   ],
-]
-
-const implementationMap = [
-  ['PLAYER SURFACE', 'Footstep switch', 'Guard noise value'],
-  ['ALERT LEVEL', 'Music layers', 'Intensity without a track swap'],
-  ['TIME ABILITY', 'Bus pitch + filter', 'Freeze and rewind feedback'],
-  ['HAVELI SPACE', 'Reverb zone', 'Courtyard and room transitions'],
 ]
 
 export default function UnderTheHood() {
@@ -43,22 +39,9 @@ export default function UnderTheHood() {
         <i>→</i>
         <span>PARAMETER</span>
         <i>→</i>
-        <span>FMOD EVENT</span>
+        <span>EVENT</span>
         <i>→</i>
-        <span>UNITY BUILD</span>
-      </div>
-      <div className="implementation-evidence" data-reveal>
-        <header>
-          <span className="field-label">IMPLEMENTATION MAP</span>
-          <p>Systems developed for Rahasya and The CodeBreakers.</p>
-        </header>
-        {implementationMap.map(([input, system, result]) => (
-          <div key={input}>
-            <strong>{input}</strong>
-            <span>{system}</span>
-            <span>{result}</span>
-          </div>
-        ))}
+        <span>GAME BUILD</span>
       </div>
       <div className="tech-grid">
         {systems.map(([name, use]) => (

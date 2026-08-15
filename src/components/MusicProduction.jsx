@@ -5,8 +5,8 @@ import { assetPath } from '../utils/assets'
 import { links } from '../data/site'
 
 const tracks = [
-  ['E Ionian Aug Sickkkk', 'e-ionian.mp3'],
-  ['+−=', 'plus-minus.mp3'],
+  ['Beat_01', 'e-ionian.mp3'],
+  ['Beat_02', 'plus-minus.mp3'],
   ['DayDreamer — New Chapter', 'daydreamer-new-chapter.mp3'],
   ['A Walk', 'a-walk.mp3'],
   ['Drown', 'drown.mp3'],
@@ -84,7 +84,7 @@ export default function MusicProduction() {
         <audio
           ref={audioRef}
           src={track.src}
-          preload="metadata"
+          preload="none"
           onLoadStart={() => {
             setLoading(true)
             setStatus('LOADING')
@@ -161,6 +161,7 @@ export default function MusicProduction() {
           </div>
           <div className="retro-controls">
             <button
+              data-sonic="stone"
               onClick={() => selectTrack((active - 1 + tracks.length) % tracks.length)}
               aria-label="Previous track"
             >
@@ -168,6 +169,7 @@ export default function MusicProduction() {
             </button>
             <button
               className="retro-controls__play"
+              data-sonic="stone"
               onClick={toggle}
               aria-pressed={playing}
               aria-label={`${playing ? 'Pause' : 'Play'} ${track.title}`}
@@ -175,6 +177,7 @@ export default function MusicProduction() {
               {playing ? 'Ⅱ' : '▶'}
             </button>
             <button
+              data-sonic="stone"
               onClick={() => selectTrack((active + 1) % tracks.length)}
               aria-label="Next track"
             >

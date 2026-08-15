@@ -26,19 +26,31 @@ export default function Contact() {
           </p>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 26 }}>
-            <a className="btn btn--solid" href={`mailto:${identity.email}`}>
+            <a className="btn btn--solid" href={`mailto:${identity.email}`} data-sonic="stone">
               Email me
             </a>
-            <a className="btn" href={identity.resumePdf} download>
+            <a className="btn" href={identity.resumePdf} download data-sonic="stone">
               Download resume
             </a>
             {links.linkedin && (
-              <a className="btn" href={links.linkedin} target="_blank" rel="noreferrer noopener">
+              <a
+                className="btn"
+                href={links.linkedin}
+                target="_blank"
+                rel="noreferrer noopener"
+                data-sonic="stone"
+              >
                 LinkedIn
               </a>
             )}
             {links.github && (
-              <a className="btn" href={links.github} target="_blank" rel="noreferrer noopener">
+              <a
+                className="btn"
+                href={links.github}
+                target="_blank"
+                rel="noreferrer noopener"
+                data-sonic="stone"
+              >
                 GitHub
               </a>
             )}

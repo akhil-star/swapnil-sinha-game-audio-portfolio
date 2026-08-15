@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
-import { Section, ModuleHeader, Chips } from './ui'
+import { Section, ModuleHeader, Chips, MediaImage, VideoEmbed } from './ui'
 import { projects, resolveMedia } from '../data/projects'
+import { useSound } from './SoundContext'
 
 function ProjectCard({ project, index, onOpen }) {
   const shot = project.media?.shots?.[0]
@@ -17,7 +18,7 @@ function ProjectCard({ project, index, onOpen }) {
           ? project.media.shots
               .slice(0, 3)
               .map((item) => (
-                <img
+                <MediaImage
                   key={item.local}
                   src={resolveMedia(item.remote, item.local)}
                   alt={item.caption || ''}
@@ -25,7 +26,7 @@ function ProjectCard({ project, index, onOpen }) {
                 />
               ))
           : shot && (
-              <img
+              <MediaImage
                 src={resolveMedia(shot.remote, shot.local)}
                 alt={shot.caption || ''}
                 loading="lazy"
@@ -50,7 +51,12 @@ function ProjectCard({ project, index, onOpen }) {
         <Chips items={project.stack} />
         <div className="proj__foot">
           <span>{project.studio}</span>
-          <button className="game-link game-link--button" onClick={() => onOpen(project)}>
+          <button
+            type="button"
+            className="game-link game-link--button"
+            data-sonic="stone"
+            onClick={() => onOpen(project)}
+          >
             OPEN CASE FILE ↗
           </button>
         </div>
@@ -61,11 +67,21 @@ function ProjectCard({ project, index, onOpen }) {
 
 export default function ShippedWork() {
   const dialogRef = useRef(null)
-  const [selected, setSelected] = useState(projects[0])
+  const { notify } = useSound()
+  const [selected, setSelected] = useState(projects[0] ?? null)
 
   const openProject = (project) => {
     setSelected(project)
-    dialogRef.current?.showModal()
+    const dialog = dialogRef.current
+    if (!dialog?.showModal) {
+      notify('This browser cannot open the project case file.')
+      return
+    }
+    try {
+      if (!dialog.open) dialog.showModal()
+    } catch {
+      notify('The project case file could not be opened. Please try again.')
+    }
   }
 
   return (
@@ -82,52 +98,90 @@ export default function ShippedWork() {
         sub="Released on Steam and mobile."
         status={`${projects.length} TITLES`}
       />
-      <div className="proj-grid">
-        {projects.map((project, index) => (
-          <ProjectCard key={project.id} project={project} index={index} onOpen={openProject} />
-        ))}
-      </div>
-      <dialog className="project-file" ref={dialogRef} aria-labelledby="project-file-title">
-        <div className="project-file__shell">
-          <header className="project-file__header">
-            <div>
-              <span className="field-label">PROJECT CASE FILE · {selected.status}</span>
-              <h2 id="project-file-title">{selected.title}</h2>
-              <p>{selected.subtitle}</p>
-            </div>
-            <button onClick={() => dialogRef.current?.close()}>CLOSE ×</button>
-          </header>
-          <div className="project-file__content">
-            <div className="project-file__gallery">
-              {selected.media?.shots?.map((shot) => (
-                <figure key={shot.local}>
-                  <img src={resolveMedia(shot.remote, shot.local)} alt={shot.caption || ''} />
-                  {shot.caption && <figcaption>{shot.caption}</figcaption>}
-                </figure>
-              ))}
-            </div>
-            <aside className="project-file__details">
-              <span className="field-label">{selected.role.join(' · ')}</span>
-              <h3>What brought it to life</h3>
-              <p>{selected.summary}</p>
-              <ul>
-                {selected.highlights?.map((highlight) => (
-                  <li key={highlight}>{highlight}</li>
-                ))}
-              </ul>
-              <Chips items={selected.stack} />
-              <a
-                className="btn btn--solid"
-                href={selected.href}
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                {selected.hrefLabel} ↗
-              </a>
-            </aside>
-          </div>
+      {projects.length ? (
+        <div className="proj-grid">
+          {projects.map((project, index) => (
+            <ProjectCard key={project.id} project={project} index={index} onOpen={openProject} />
+          ))}
         </div>
-      </dialog>
+      ) : (
+        <div className="empty-state" role="status">
+          <span>CASE FILES UNAVAILABLE</span>
+          <p>Project details are being updated. Please check back soon.</p>
+        </div>
+      )}
+      {selected && (
+        <dialog className="project-file" ref={dialogRef} aria-labelledby="project-file-title">
+          <div className="project-file__shell">
+            <header className="project-file__header">
+              <div>
+                <span className="field-label">PROJECT CASE FILE · {selected.status}</span>
+                <h2 id="project-file-title">{selected.title}</h2>
+                <p>{selected.subtitle}</p>
+              </div>
+              <button type="button" onClick={() => dialogRef.current?.close()}>
+                CLOSE ×
+              </button>
+            </header>
+            <div className="project-file__content">
+              <div className="project-file__gallery">
+                {selected.trailerVideoId && (
+                  <figure className="project-file__video">
+                    <VideoEmbed
+                      videoId={selected.trailerVideoId}
+                      title={`${selected.title} trailer`}
+                    />
+                    <figcaption>Official trailer</figcaption>
+                  </figure>
+                )}
+                {selected.media?.shots?.map((shot) => (
+                  <figure key={shot.local}>
+                    <MediaImage
+                      src={resolveMedia(shot.remote, shot.local)}
+                      alt={shot.caption || `${selected.title} gameplay screenshot`}
+                      loading="lazy"
+                    />
+                    {shot.caption && <figcaption>{shot.caption}</figcaption>}
+                  </figure>
+                ))}
+              </div>
+              <aside className="project-file__details">
+                <span className="field-label">{selected.role.join(' · ')}</span>
+                <h3>What brought it to life</h3>
+                <p>{selected.summary}</p>
+                <ul>
+                  {selected.highlights?.map((highlight) => (
+                    <li key={highlight}>{highlight}</li>
+                  ))}
+                </ul>
+                <Chips items={selected.stack} />
+                <div className="project-file__actions">
+                  <a
+                    className="btn btn--solid"
+                    data-sonic="stone"
+                    href={selected.href}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
+                    {selected.hrefLabel} ↗
+                  </a>
+                  {selected.trailerHref && (
+                    <a
+                      className="btn"
+                      data-sonic="stone"
+                      href={selected.trailerHref}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                    >
+                      Watch trailer ↗
+                    </a>
+                  )}
+                </div>
+              </aside>
+            </div>
+          </div>
+        </dialog>
+      )}
     </Section>
   )
 }

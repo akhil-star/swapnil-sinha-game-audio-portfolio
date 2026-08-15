@@ -1,4 +1,4 @@
-import { useReveal } from './components/ui'
+import { useReveal } from './hooks/useReveal'
 import { SoundProvider } from './components/SoundContext'
 import Nav from './components/Nav'
 import Hero from './components/Hero'
@@ -23,8 +23,8 @@ function Page() {
         <Nav />
         <main>
           <Hero />
-          <ChannelReels />
           <Reel />
+          <ChannelReels />
           <ShippedWork />
           <UnderTheHood />
           <SoundLibrary />

@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { Section, ModuleHeader } from './ui'
+import { Section, ModuleHeader, MediaImage } from './ui'
 import { useSound } from './SoundContext'
 import { assetPath } from '../utils/assets'
 import { links } from '../data/site'
@@ -139,6 +139,7 @@ function Sample({ title, category, src, note, loopable }) {
       <div className="player-controls">
         <button
           className="transport"
+          data-sonic="stone"
           onClick={() => {
             const audio = audioRef.current
             audio.currentTime = Math.max(0, audio.currentTime - 5)
@@ -149,6 +150,7 @@ function Sample({ title, category, src, note, loopable }) {
         </button>
         <button
           className="transport transport--primary"
+          data-sonic="stone"
           onClick={toggle}
           aria-label={`${playing ? 'Pause' : 'Play'} ${title}`}
         >
@@ -156,6 +158,7 @@ function Sample({ title, category, src, note, loopable }) {
         </button>
         <button
           className="transport"
+          data-sonic="stone"
           onClick={() => {
             const audio = audioRef.current
             audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 5)
@@ -209,7 +212,7 @@ export default function SoundLibrary() {
       />
       <div className="obscura-product" data-reveal>
         <div className="obscura-product__art">
-          <img
+          <MediaImage
             src={assetPath('media/obscura-header.jpg')}
             alt="Obscura Horror Toolkit artwork by Artsycaves"
             loading="lazy"
@@ -222,6 +225,7 @@ export default function SoundLibrary() {
           <div className="obscura-product__actions">
             <a
               className="btn btn--solid"
+              data-sonic="stone"
               href={links.obscura}
               target="_blank"
               rel="noreferrer noopener"

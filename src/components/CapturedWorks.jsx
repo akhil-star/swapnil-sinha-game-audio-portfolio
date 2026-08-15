@@ -3,10 +3,24 @@ import { Section, ModuleHeader } from './ui'
 import { supportingCategories } from '../data/capturedWorks'
 import { links } from '../data/site'
 import AudioArchive from './AudioArchive'
+import { useSound } from './SoundContext'
 
 export default function CapturedWorks() {
   const archiveRef = useRef(null)
+  const { notify } = useSound()
   const categories = supportingCategories.map(([label, count]) => `${label} · ${count}`)
+  const openArchive = () => {
+    const dialog = archiveRef.current
+    if (!dialog?.showModal) {
+      notify('This browser cannot open the listening room.')
+      return
+    }
+    try {
+      if (!dialog.open) dialog.showModal()
+    } catch {
+      notify('The listening room could not be opened. Please try again.')
+    }
+  }
   return (
     <Section id="other-work">
       <ModuleHeader
@@ -38,7 +52,7 @@ export default function CapturedWorks() {
           <strong>BKR–DKR</strong>
           <em>WATCH PROJECT ↗</em>
         </a>
-        <button type="button" onClick={() => archiveRef.current?.showModal()}>
+        <button type="button" onClick={openArchive}>
           <span className="field-label">PLAYABLE AUDIO</span>
           <strong>11 playable mixes, masters + post pieces</strong>
           <em>OPEN LISTENING ROOM ↗</em>

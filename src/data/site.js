@@ -1,3 +1,5 @@
+import { assetPath } from '../utils/assets'
+
 /**
  * Identity, contact and top-level links.
  * Shared identity and external links. Change once, update everywhere.
@@ -24,12 +26,67 @@ export const links = {
   sourcePortfolio: 'https://drive.google.com/drive/folders/14sELWWfI1Veox6l0x-bbpn38jmxUw_li',
 }
 
-export const toolchain = {
-  'daily drivers': ['FMOD Studio', 'Unity', 'Reaper', 'Ableton Live'],
-  'also working with': ['Wwise'],
-  'currently learning': ['Unreal Engine'],
-  'record + repair': ['Zoom H1e', 'iZotope RX', 'FabFilter Pro-Q4'],
+const tool = (name, logo, href, detail) => ({
+  name,
+  logo: assetPath(`tool-logos/${logo}`),
+  href,
+  detail,
+})
+
+const tools = {
+  h1e: tool(
+    'H1e',
+    'zoom.png',
+    'https://zoomcorp.com/en/us/handheld-recorders/handheld-recorders/h1essential/',
+    'ZOOM RECORDER',
+  ),
+  waves: tool('Waves', 'waves.png', 'https://www.waves.com/'),
+  fabfilter: tool('FabFilter', 'fabfilter.svg', 'https://www.fabfilter.com/'),
+  izotope: tool('iZotope RX', 'izotope.svg', 'https://www.izotope.com/products/rx'),
+  reaper: tool('Reaper', 'reaper.jpg', 'https://www.reaper.fm/'),
+  ableton: tool('Ableton', 'abletonlive.svg', 'https://www.ableton.com/en/live/'),
+  protools: tool('Pro Tools', 'protools.svg', 'https://www.avid.com/pro-tools', 'AVID'),
+  soundtoys: tool('SoundToys', 'soundtoys.png', 'https://www.soundtoys.com/'),
+  voxengo: tool('Voxengo', 'voxengo.svg', 'https://www.voxengo.com/'),
+  fmod: tool('FMOD', 'fmod.svg', 'https://www.fmod.com/studio'),
+  wwise: tool('Wwise', 'wwise.svg', 'https://www.audiokinetic.com/en/wwise/overview/'),
+  csharp: tool('C#', 'csharp.svg', 'https://learn.microsoft.com/en-us/dotnet/csharp/'),
+  blueprints: tool(
+    'Blueprints',
+    'blueprints.svg',
+    'https://dev.epicgames.com/documentation/en-us/unreal-engine/blueprints-visual-scripting-in-unreal-engine',
+    'UNREAL ENGINE',
+  ),
+  unity: tool('Unity', 'unity.svg', 'https://unity.com/'),
+  unreal: tool('Unreal', 'unrealengine.svg', 'https://www.unrealengine.com/'),
 }
+
+export const toolchain = [
+  {
+    group: 'Record & Repair',
+    items: [tools.h1e, tools.waves, tools.fabfilter, tools.izotope],
+  },
+  {
+    group: 'Design',
+    items: [
+      tools.reaper,
+      tools.ableton,
+      tools.protools,
+      tools.soundtoys,
+      tools.waves,
+      tools.fabfilter,
+      tools.voxengo,
+    ],
+  },
+  {
+    group: 'Implementation',
+    items: [tools.fmod, tools.wwise, tools.csharp, tools.blueprints],
+  },
+  {
+    group: 'Game Engine',
+    items: [tools.unity, tools.unreal],
+  },
+]
 
 export const philosophy = {
   lines: [
@@ -44,4 +101,3 @@ export const philosophy = {
     'Every sound needs a reason to be there.',
   ],
 }
-import { assetPath } from '../utils/assets'

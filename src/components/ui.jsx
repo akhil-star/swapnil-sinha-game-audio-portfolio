@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useState } from 'react'
 
 /** Section header styled like an inspector module bar. */
 export function ModuleHeader({ id, title, sub, status }) {
@@ -42,32 +42,59 @@ export function Chips({ items }) {
   )
 }
 
-/** Adds .is-in to [data-reveal] descendants as they scroll into view. */
-export function useReveal() {
-  const root = useRef(null)
-  useEffect(() => {
-    const node = root.current
-    if (!node) return
-    const targets = node.querySelectorAll('[data-reveal]')
-    if (!('IntersectionObserver' in window)) {
-      targets.forEach((t) => t.classList.add('is-in'))
-      return
-    }
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add('is-in')
-            io.unobserve(e.target)
-          }
-        })
-      },
-      { rootMargin: '0px 0px -8% 0px', threshold: 0.06 },
+/** Image with a readable fallback instead of a broken-image icon. */
+export function MediaImage({ alt, className = '', ...props }) {
+  const [failed, setFailed] = useState(false)
+
+  if (failed) {
+    return (
+      <div
+        className={`media-fallback ${className}`.trim()}
+        role={alt ? 'img' : undefined}
+        aria-label={alt ? `${alt} unavailable` : undefined}
+        aria-hidden={alt ? undefined : true}
+      >
+        <span>IMAGE UNAVAILABLE</span>
+      </div>
     )
-    targets.forEach((t) => io.observe(t))
-    return () => io.disconnect()
-  }, [])
-  return root
+  }
+
+  return (
+    <img
+      {...props}
+      className={className}
+      alt={alt}
+      decoding="async"
+      onError={() => setFailed(true)}
+    />
+  )
+}
+
+/** Lazy YouTube embed with an explicit loading state and external fallback. */
+export function VideoEmbed({ videoId, title, className = '' }) {
+  const [loaded, setLoaded] = useState(false)
+
+  return (
+    <div
+      className={`video-embed ${loaded ? 'is-loaded' : ''} ${className}`.trim()}
+      aria-busy={!loaded}
+    >
+      {!loaded && (
+        <div className="video-embed__loading" role="status">
+          <span className="loading-spinner" aria-hidden="true" />
+          <span>LOADING VIDEO</span>
+        </div>
+      )}
+      <iframe
+        src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0`}
+        title={title}
+        loading="lazy"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowFullScreen
+        onLoad={() => setLoaded(true)}
+      />
+    </div>
+  )
 }
 
 export function Section({ id, children, flush }) {

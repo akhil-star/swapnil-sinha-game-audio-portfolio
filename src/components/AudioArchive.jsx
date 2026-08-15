@@ -51,6 +51,7 @@ export default function AudioArchive({ dialogRef }) {
   const [collectionKey, setCollectionKey] = useState('mix')
   const [active, setActive] = useState(0)
   const [playing, setPlaying] = useState(false)
+  const [status, setStatus] = useState('READY')
   const [time, setTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const collection = collections[collectionKey]
@@ -68,10 +69,12 @@ export default function AudioArchive({ dialogRef }) {
       audio.src = collection.tracks[index].src
       audio.load()
     }
+    setStatus('LOADING')
     try {
       await requestPlay(audio)
     } catch {
       setPlaying(false)
+      setStatus('AUDIO UNAVAILABLE')
     }
   }
 
@@ -81,11 +84,15 @@ export default function AudioArchive({ dialogRef }) {
     setActive(0)
     setTime(0)
     setDuration(0)
+    setStatus('READY')
   }
 
   useEffect(() => {
     const dialog = dialogRef.current
-    const stop = () => audioRef.current?.pause()
+    const stop = () => {
+      audioRef.current?.pause()
+      setStatus('PAUSED')
+    }
     dialog?.addEventListener('close', stop)
     return () => dialog?.removeEventListener('close', stop)
   }, [dialogRef])
@@ -98,7 +105,11 @@ export default function AudioArchive({ dialogRef }) {
             <span className="field-label">COMPLETE LISTENING ARCHIVE · 11 PIECES</span>
             <h2 id="audio-archive-title">Listen to the work.</h2>
           </div>
-          <button className="audio-archive__close" onClick={() => dialogRef.current?.close()}>
+          <button
+            type="button"
+            className="audio-archive__close"
+            onClick={() => dialogRef.current?.close()}
+          >
             CLOSE ×
           </button>
         </header>
@@ -121,12 +132,29 @@ export default function AudioArchive({ dialogRef }) {
             <span className="field-label">NOW SELECTED · {track.credit}</span>
             <h3>{track.title}</h3>
             <p>{collection.note}</p>
+            <div className="audio-archive__status" role="status" aria-live="polite">
+              {status === 'LOADING' && <span className="loading-spinner" aria-hidden="true" />}
+              {status}
+            </div>
             <audio
               ref={audioRef}
               src={track.src}
-              preload="metadata"
-              onPlay={() => setPlaying(true)}
-              onPause={() => setPlaying(false)}
+              preload="none"
+              onLoadStart={() => setStatus('LOADING')}
+              onCanPlay={() => setStatus('READY')}
+              onWaiting={() => setStatus('BUFFERING')}
+              onPlay={() => {
+                setPlaying(true)
+                setStatus('PLAYING')
+              }}
+              onPause={() => {
+                setPlaying(false)
+                setStatus('PAUSED')
+              }}
+              onError={() => {
+                setPlaying(false)
+                setStatus('AUDIO UNAVAILABLE')
+              }}
               onTimeUpdate={(event) => setTime(event.currentTarget.currentTime)}
               onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)}
               onEnded={() => playTrack((active + 1) % collection.tracks.length)}
@@ -134,6 +162,7 @@ export default function AudioArchive({ dialogRef }) {
             <div className="archive-transport">
               <button
                 className="archive-transport__play"
+                data-sonic="stone"
                 onClick={() => (playing ? audioRef.current.pause() : playTrack(active))}
                 aria-label={`${playing ? 'Pause' : 'Play'} ${track.title}`}
               >

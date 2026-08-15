@@ -3,29 +3,30 @@
  *
  * Direction: an audio middleware inspector, not a music streaming page.
  * Panels, hairlines, mono readouts, meters. Colour is used as signal —
- * cyan carries state, violet carries music, amber carries warnings.
+ * electric lime carries state, ember gold carries music, and warm amber
+ * carries warnings against a near-black forest-green world.
  */
 :root {
   /* Surface */
-  --void: #06080b;
-  --panel: rgba(19, 24, 31, 0.72);
-  --panel-2: rgba(27, 33, 42, 0.78);
-  --rail: rgba(35, 43, 54, 0.86);
-  --line: rgba(213, 235, 245, 0.1);
-  --line-strong: rgba(213, 235, 245, 0.22);
+  --void: #050a06;
+  --panel: rgba(10, 17, 10, 0.76);
+  --panel-2: rgba(17, 27, 15, 0.82);
+  --rail: rgba(23, 35, 18, 0.88);
+  --line: rgba(199, 218, 159, 0.12);
+  --line-strong: rgba(199, 218, 159, 0.26);
 
   /* Ink */
-  --text: #f0f3f6;
-  --dim: #a5adb7;
-  --dimmer: #89939f;
+  --text: #f1f2e9;
+  --dim: #b7b9aa;
+  --dimmer: #858b76;
 
   /* Signal */
-  --signal: #34e7dc;
-  --signal-dim: rgba(0, 200, 255, 0.14);
-  --music: #7a5af8;
-  --music-dim: rgba(122, 90, 248, 0.16);
-  --warn: #ff9d3d;
-  --warn-dim: rgba(255, 176, 32, 0.14);
+  --signal: #a6d75b;
+  --signal-dim: rgba(166, 215, 91, 0.15);
+  --music: #d59a3c;
+  --music-dim: rgba(213, 154, 60, 0.16);
+  --warn: #efb052;
+  --warn-dim: rgba(239, 176, 82, 0.16);
 
   /* Type */
   --display: 'Instrument Serif', Georgia, serif;

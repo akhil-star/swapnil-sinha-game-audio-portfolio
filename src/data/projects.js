@@ -28,6 +28,8 @@ export const projects = [
     accent: 'cyan',
     href: 'https://store.steampowered.com/app/4280830/Rahasya/',
     hrefLabel: 'View on Steam',
+    trailerHref: 'https://youtu.be/D3ceONBRG4Q?si=XqjGxwuxmcMYyn_2',
+    trailerVideoId: 'D3ceONBRG4Q',
     summary:
       'Full audio direction on a horror title with no combat. The player cannot fight the entity hunting them, so audio carries the entire threat model — where it is, whether it heard you, and how close it is to finding you.',
     cardSummary:
@@ -35,20 +37,9 @@ export const projects = [
     highlights: [
       'Owned the audio from concept through implementation: original score, gameplay SFX, ambience, UI and dialogue',
       'Connected FMOD events to gameplay in Unity and shaped reverb boundaries around the haveli spaces',
-      'Used creature and environmental cues to communicate danger without relying on a HUD',
       'Completed the trailer audio under a six-hour turnaround',
     ],
     media: {
-      hero: {
-        remote:
-          'https://shared.akamai.steamstatic.com/community_assets/images/apps/4280830/c871edb021c90c4310cde838d6195fbb14fbdf0f.jpg',
-        local: 'rahasya-hero.jpg',
-      },
-      header: {
-        remote:
-          'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4280830/be9b6895ee3940ae4db13955ad162f75a41dc136/header.jpg',
-        local: 'rahasya-header.jpg',
-      },
       shots: [
         {
           remote:
@@ -106,9 +97,7 @@ export const projects = [
     },
     highlights: [
       'FMOD event logic deployed via C# alongside the lead developer',
-      'Alert level drives a vertical music re-orchestration rather than a track swap',
       'Time-freeze pitches and filters the entire bus; rewind reverses a pre-rendered tail',
-      'Per-surface footstep switch tied to the same noise value the guard AI reads',
     ],
   },
 

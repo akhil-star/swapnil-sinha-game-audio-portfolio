@@ -1,4 +1,4 @@
-import { Section, ModuleHeader, Chips } from './ui'
+import { Section, ModuleHeader } from './ui'
 import { experience, education } from '../data/experience'
 import { toolchain, philosophy, identity } from '../data/site'
 
@@ -61,11 +61,34 @@ export default function Experience() {
         <div className="toolkit-panel">
           <div className="eyebrow">TOOLS, BY THE JOB THEY DO</div>
           <div className="toolkit-grid">
-            {Object.entries(toolchain).map(([group, items]) => (
-              <div className="toolkit-group" key={group}>
-                <div className="toolkit-group__label">{group}</div>
-                <Chips items={items} />
-              </div>
+            {toolchain.map(({ group, items }) => (
+              <section className="toolkit-group" key={group} aria-label={group}>
+                <h3 className="toolkit-group__label">{group}</h3>
+                <ul className="toolkit-tools">
+                  {items.map((item) => (
+                    <li key={item.name}>
+                      <a
+                        className="tool-mark"
+                        href={item.href}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        aria-label={`${item.name} official website`}
+                      >
+                        <span className="tool-mark__logo" aria-hidden="true">
+                          <img src={item.logo} alt="" width="44" height="44" />
+                        </span>
+                        <span className="tool-mark__name">
+                          <strong>{item.name}</strong>
+                          {item.detail && <small>{item.detail}</small>}
+                        </span>
+                        <span className="tool-mark__arrow" aria-hidden="true">
+                          ↗
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </section>
             ))}
           </div>
         </div>

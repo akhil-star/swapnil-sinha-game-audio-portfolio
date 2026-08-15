@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { assetPath } from '../utils/assets'
 export default function WorldBackdrop() {
   const backdropRef = useRef(null)
 
@@ -31,7 +32,7 @@ export default function WorldBackdrop() {
       ref={backdropRef}
       className="world-backdrop"
       style={{
-        '--world-image': 'url("/artwork/deep-ocean-ringworld-backdrop.jpg")',
+        '--world-image': `url("${assetPath('artwork/verdant-ember-ringworld-backdrop.jpg')}")`,
       }}
       aria-hidden="true"
     />
