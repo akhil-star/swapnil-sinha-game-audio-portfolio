@@ -61,7 +61,7 @@ export default function Contact() {
             <img
               className="contact-profile__avatar"
               src={assetPath('media/contact-operator-avatar.jpg')}
-              alt="3D tactical audio-operator portrait representing Swapnil Sinha"
+              alt="Animated 3D audio operator wearing a waveform visor"
             />
             <dl className="readout contact-profile__details">
               <dt>Name</dt>
