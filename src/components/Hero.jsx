@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { assetPath } from '../utils/assets'
 
 function Signal() {
   const canvasRef = useRef(null)
@@ -99,7 +100,14 @@ export default function Hero() {
     }
   }, [])
   return (
-    <header className="hero" id="top" ref={heroRef}>
+    <header
+      className="hero"
+      id="top"
+      ref={heroRef}
+      style={{
+        '--hero-world-image': `url("${assetPath('artwork/verdant-ember-ringworld-backdrop.jpg')}")`,
+      }}
+    >
       <Signal />
       <div className="hero__scrim" />
       <div className="shell hero__inner">
