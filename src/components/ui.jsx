@@ -98,29 +98,59 @@ export function MediaImage({ alt, className = '', src, onError, onLoad, ...props
   )
 }
 
-/** Lazy YouTube embed with an explicit loading state and external fallback. */
-export function VideoEmbed({ videoId, title, className = '' }) {
+/** Consent-friendly YouTube embed with a reliable direct-watch fallback. */
+export function VideoEmbed({ videoId, title, poster, className = '' }) {
+  const [activated, setActivated] = useState(false)
   const [loaded, setLoaded] = useState(false)
+  const watchUrl = `https://www.youtube.com/watch?v=${videoId}`
 
   return (
     <div
       className={`video-embed ${loaded ? 'is-loaded' : ''} ${className}`.trim()}
-      aria-busy={!loaded}
+      aria-busy={activated && !loaded}
     >
-      {!loaded && (
-        <div className="video-embed__loading" role="status">
-          <span className="loading-spinner" aria-hidden="true" />
-          <span>LOADING VIDEO</span>
-        </div>
+      {!activated ? (
+        <button
+          className="video-embed__launch"
+          type="button"
+          data-sonic="stone"
+          onClick={() => setActivated(true)}
+          aria-label={`Play ${title}`}
+        >
+          {poster && <img src={poster} alt="" decoding="async" />}
+          <span className="video-embed__play" aria-hidden="true">
+            ▶
+          </span>
+          <strong>PLAY VIDEO</strong>
+        </button>
+      ) : (
+        <>
+          {!loaded && (
+            <div className="video-embed__loading" role="status">
+              <span className="loading-spinner" aria-hidden="true" />
+              <span>CONNECTING TO YOUTUBE</span>
+            </div>
+          )}
+          <iframe
+            src={`https://www.youtube.com/embed/${videoId}?rel=0&autoplay=1`}
+            title={title}
+            loading="eager"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            onLoad={() => setLoaded(true)}
+          />
+        </>
       )}
-      <iframe
-        src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0`}
-        title={title}
-        loading="lazy"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowFullScreen
-        onLoad={() => setLoaded(true)}
-      />
+      <a
+        className="video-embed__external"
+        href={watchUrl}
+        target="_blank"
+        rel="noreferrer noopener"
+        data-sonic="stone"
+      >
+        OPEN ON YOUTUBE ↗
+      </a>
     </div>
   )
 }

@@ -130,6 +130,14 @@ export default function ShippedWork() {
                     <VideoEmbed
                       videoId={selected.trailerVideoId}
                       title={`${selected.title} trailer`}
+                      poster={
+                        selected.media?.shots?.[0]
+                          ? resolveMedia(
+                              selected.media.shots[0].remote,
+                              selected.media.shots[0].local,
+                            )
+                          : undefined
+                      }
                     />
                     <figcaption>Official trailer</figcaption>
                   </figure>

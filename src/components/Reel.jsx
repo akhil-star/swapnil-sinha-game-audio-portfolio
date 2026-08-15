@@ -49,7 +49,7 @@ export default function Reel() {
           </a>
         </div>
         <div className="reel">
-          <VideoEmbed videoId={reel.videoId} title={reel.title} />
+          <VideoEmbed videoId={reel.videoId} title={reel.title} poster={reel.thumbnail} />
         </div>
       </div>
     </Section>
