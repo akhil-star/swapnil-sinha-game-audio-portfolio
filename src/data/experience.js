@@ -35,64 +35,21 @@ export const experience = [
     company: 'Freelance',
     role: 'Audio Engineer — Mixing & Mastering',
     period: 'Aug 2023 — Apr 2025',
-    points: ['Learned to make decisions that survive outside the studio — on phones, in cars and on whatever speaker a listener already owns.'],
+    points: [
+      'Learned to make decisions that survive outside the studio — on phones, in cars and on whatever speaker a listener already owns.',
+    ],
   },
 ]
 
 export const education = [
-  { school: 'Ajeenkya DY Patil, Pune (SEAMEDU)', qualification: 'BSc Sound Engineering', period: '2022 — 2025' },
-  { school: 'ILM Academy, Gurgaon', qualification: 'Certificate in Music Production', period: '2018 — 2019' },
-]
-
-/**
- * Audio Breakdown — the stem mixer.
- *
- * Each layer is synthesised in the browser by default, so this works with zero
- * asset files. To use your real stems instead: export each layer as a matched
- * loop, drop it in /public/audio/breakdown/, and set `file` below. The mixer
- * will prefer the file and fall back to synthesis if it fails to load.
- */
-export const breakdownLayers = [
   {
-    id: 'music',
-    name: 'Music',
-    detail: 'Low drone bed + fifth. Ducks under the creature bus.',
-    color: 'violet',
-    file: null, // e.g. '/audio/breakdown/rahasya-music.wav'
+    school: 'Ajeenkya DY Patil, Pune (SEAMEDU)',
+    qualification: 'BSc Sound Engineering',
+    period: '2022 — 2025',
   },
   {
-    id: 'ambience',
-    name: 'Environment',
-    detail: 'Wind through the courtyard, modulated bandpass on filtered noise.',
-    color: 'cyan',
-    file: null,
-  },
-  {
-    id: 'creature',
-    name: 'Creature',
-    detail: 'Three-layer vocal bed. Gain and cutoff ride the proximity parameter.',
-    color: 'amber',
-    file: null,
-  },
-  {
-    id: 'foley',
-    name: 'Footsteps',
-    detail: 'Surface-switched steps. Publishes a noise value the entity AI reads.',
-    color: 'cyan',
-    file: null,
-  },
-  {
-    id: 'ui',
-    name: 'UI',
-    detail: 'Short blips, bypasses the reverb send entirely.',
-    color: 'violet',
-    file: null,
-  },
-  {
-    id: 'heartbeat',
-    name: 'Heartbeat',
-    detail: 'Rate and depth driven by player health. Unducked while hiding.',
-    color: 'amber',
-    file: null,
+    school: 'ILM Academy, Gurgaon',
+    qualification: 'Certificate in Music Production',
+    period: '2018 — 2019',
   },
 ]

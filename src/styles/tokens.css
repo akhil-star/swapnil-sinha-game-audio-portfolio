@@ -3,29 +3,30 @@
  *
  * Direction: an audio middleware inspector, not a music streaming page.
  * Panels, hairlines, mono readouts, meters. Colour is used as signal —
- * cyan carries state, violet carries music, amber carries warnings.
+ * electric lime carries state, ember gold carries music, and warm amber
+ * carries warnings against a near-black forest-green world.
  */
 :root {
   /* Surface */
-  --void: #08090b;
-  --panel: #0e1014;
-  --panel-2: #14171c;
-  --rail: #1b1f26;
-  --line: rgba(240, 244, 248, 0.09);
-  --line-strong: rgba(240, 244, 248, 0.18);
+  --void: #050a06;
+  --panel: rgba(10, 17, 10, 0.76);
+  --panel-2: rgba(17, 27, 15, 0.82);
+  --rail: rgba(23, 35, 18, 0.88);
+  --line: rgba(199, 218, 159, 0.12);
+  --line-strong: rgba(199, 218, 159, 0.26);
 
   /* Ink */
-  --text: #f0f3f6;
-  --dim: #8a929c;
-  --dimmer: #5c646e;
+  --text: #f1f2e9;
+  --dim: #b7b9aa;
+  --dimmer: #858b76;
 
   /* Signal */
-  --signal: #00c8ff;
-  --signal-dim: rgba(0, 200, 255, 0.14);
-  --music: #7a5af8;
-  --music-dim: rgba(122, 90, 248, 0.16);
-  --warn: #ffb020;
-  --warn-dim: rgba(255, 176, 32, 0.14);
+  --signal: #a6d75b;
+  --signal-dim: rgba(166, 215, 91, 0.15);
+  --music: #d59a3c;
+  --music-dim: rgba(213, 154, 60, 0.16);
+  --warn: #efb052;
+  --warn-dim: rgba(239, 176, 82, 0.16);
 
   /* Type */
   --display: 'Instrument Serif', Georgia, serif;
@@ -35,13 +36,19 @@
   /* Rhythm */
   --gutter: clamp(20px, 4vw, 56px);
   --section-y: clamp(72px, 11vh, 132px);
-  --radius: 3px;
-  --radius-lg: 6px;
+  --radius: 14px;
+  --radius-lg: 24px;
 
   /* Motion */
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
   --fast: 160ms;
   --slow: 520ms;
+
+  /* Shared wave language */
+  --wave-thickness: 1.35px;
+  --wave-idle-opacity: 0.55;
+  --wave-active-opacity: 0.82;
+  --wave-transition: 520ms;
 }
 
 [data-accent='cyan'] {

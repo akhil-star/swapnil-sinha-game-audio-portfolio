@@ -12,7 +12,7 @@
 export const USE_LOCAL_MEDIA = true
 
 export const resolveMedia = (remoteUrl, localName) =>
-  USE_LOCAL_MEDIA ? `/media/${localName}` : remoteUrl
+  USE_LOCAL_MEDIA ? assetPath(`media/${localName}`) : remoteUrl
 
 export const projects = [
   {
@@ -23,24 +23,23 @@ export const projects = [
     platform: 'PC / Steam',
     status: 'Released',
     featured: true,
-    role: ['Audio Director', 'Sound Designer', 'Composer', 'FMOD Implementation'],
+    role: ['Sound Designer', 'Music Composer'],
     stack: ['FMOD Studio', 'Unity', 'Reaper', 'Kontakt', 'Zoom H1e'],
     accent: 'cyan',
     href: 'https://store.steampowered.com/app/4280830/Rahasya/',
     hrefLabel: 'View on Steam',
+    trailerHref: 'https://youtu.be/D3ceONBRG4Q?si=XqjGxwuxmcMYyn_2',
+    trailerVideoId: 'D3ceONBRG4Q',
     summary:
       'Full audio direction on a horror title with no combat. The player cannot fight the entity hunting them, so audio carries the entire threat model — where it is, whether it heard you, and how close it is to finding you.',
+    cardSummary:
+      'Sound design, original score and FMOD implementation for a no-combat horror game.',
+    highlights: [
+      'Owned the audio from concept through implementation: original score, gameplay SFX, ambience, UI and dialogue',
+      'Connected FMOD events to gameplay in Unity and shaped reverb boundaries around the haveli spaces',
+      'Completed the trailer audio under a six-hour turnaround',
+    ],
     media: {
-      hero: {
-        remote:
-          'https://shared.akamai.steamstatic.com/community_assets/images/apps/4280830/c871edb021c90c4310cde838d6195fbb14fbdf0f.jpg',
-        local: 'rahasya-hero.jpg',
-      },
-      header: {
-        remote:
-          'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4280830/be9b6895ee3940ae4db13955ad162f75a41dc136/header.jpg',
-        local: 'rahasya-header.jpg',
-      },
       shots: [
         {
           remote:
@@ -67,6 +66,8 @@ export const projects = [
     hrefLabel: 'View on Google Play',
     summary:
       'Stealth game where noise is a mechanic — surfaces have different noise sensitivity and guards react to it. Music intensifies with alert level, and time-freeze and rewind abilities each needed their own temporal audio treatment.',
+    cardSummary:
+      'Gameplay-driven FMOD audio, adaptive music and C# event logic for a stealth game.',
     media: {
       icon: {
         remote:
@@ -96,9 +97,7 @@ export const projects = [
     },
     highlights: [
       'FMOD event logic deployed via C# alongside the lead developer',
-      'Alert level drives a vertical music re-orchestration rather than a track swap',
       'Time-freeze pitches and filters the entire bus; rewind reverses a pre-rendered tail',
-      'Per-surface footstep switch tied to the same noise value the guard AI reads',
     ],
   },
 
@@ -117,6 +116,8 @@ export const projects = [
     hrefLabel: 'View on Google Play',
     summary:
       'One sonic language across a launcher hosting multiple hypercasual titles. Each game needs its own character while sharing UI, reward and tournament sounds so the platform feels like a single product.',
+    cardSummary:
+      'Sound and music across multiple mobile games, implemented with developers in Unity.',
     media: {
       icon: {
         remote:
@@ -125,22 +126,19 @@ export const projects = [
       },
       shots: [
         {
-          remote:
-            'https://play-lh.googleusercontent.com/404rMlGQ-uoFbSsjeVnlTJY85aGxBrt8kxPDhxUDztgOkoWnFUGEDcXZXUe2s7L1a3d9jPftORnZbZ5FcAW6-g=w1052-h592',
-          local: 'battlebucks-shot-01.jpg',
-          caption: 'Shared UI and reward sound set',
-        },
-        {
-          remote:
-            'https://play-lh.googleusercontent.com/zlUXke3RlOiNCnbbGxGtDcZAv3DRnfrkjyOAwkwzz_KRDtTeqjGGHhMGEWyeMQa6qqjb38JQp4joTox1map1N1E=w1052-h592',
-          local: 'battlebucks-shot-02.jpg',
-          caption: 'Per-title music beds',
-        },
-        {
-          remote:
-            'https://play-lh.googleusercontent.com/2Qp1MX97BcXMmBO4VD0JWCSlBxIh-C_fz4mwVHw0305ywOV5MCI6u3Obmnx2wIVtsScK_0L9uk9PMwf-kV0=w1052-h592',
+          remote: '',
           local: 'battlebucks-shot-03.jpg',
-          caption: 'Tournament and leaderboard feedback',
+          caption: 'Games available across the BattleBucks platform',
+        },
+        {
+          remote: '',
+          local: 'battlebucks-official-04.jpg',
+          caption: 'Competitive arena screen',
+        },
+        {
+          remote: '',
+          local: 'battlebucks-official-05.jpg',
+          caption: 'Leaderboard and player screen',
         },
       ],
     },
@@ -160,13 +158,15 @@ export const projects = [
     platform: 'Android',
     status: 'Released',
     featured: false,
-    role: ['Sound Designer', 'Composer'],
+    role: ['Sound Designer', 'Music Composer'],
     stack: ['Reaper', 'Ableton Live', 'iZotope RX', 'FabFilter Pro-Q4'],
     accent: 'violet',
     href: 'https://play.google.com/store/apps/details?id=com.JabszGamingStudios.MolotovFlip',
     hrefLabel: 'View on Google Play',
     summary:
       'Designed and composed from verbal references only — no temp track, no reference board. The whole feel of a one-tap flip mechanic rides on the landing sound, so most of the work went into the moment of contact.',
+    cardSummary:
+      'Sound and music developed from verbal references while the game was still taking shape.',
     media: {
       icon: {
         remote:
@@ -175,22 +175,19 @@ export const projects = [
       },
       shots: [
         {
-          remote:
-            'https://play-lh.googleusercontent.com/zGvUw60xqFMkYuIoM-yd35sXl2ticvBv1pf2kJjznqRhzSC8MjFjQhHNCz2oO0RBZ2AGPmU93kgBqXEtdtwFfw=w1052-h592',
-          local: 'molotov-shot-01.jpg',
-          caption: 'Desert base — flip and landing feedback',
+          remote: '',
+          local: 'molotov-shot-05.jpg',
+          caption: 'Flip gameplay in the office environment',
         },
         {
-          remote:
-            'https://play-lh.googleusercontent.com/pEvTfmSVVFyCX7ynz2yaKd4fAGKiwx-yjCmfTOBaSnxzYOjEg2wfjj3St6CwSwkaYmoW_0V6WBcuV1dq_uAi=w1052-h592',
-          local: 'molotov-shot-02.jpg',
-          caption: 'Explosion layers and debris tails',
+          remote: '',
+          local: 'molotov-shot-06.jpg',
+          caption: 'Landing between gym equipment',
         },
         {
-          remote:
-            'https://play-lh.googleusercontent.com/LTHYiWOTfMBtkbRtMFm6c9NOqsBduQb8C26DvcnYwZF2C6TwfpFOqNqwnIUP9jLsyk4ReyGVG0ZVngdbjaFaQCM=w1052-h592',
-          local: 'molotov-shot-03.jpg',
-          caption: 'Snow outpost — surface-specific impacts',
+          remote: '',
+          local: 'molotov-shot-07.jpg',
+          caption: 'Landing on a crate',
         },
       ],
     },
@@ -205,3 +202,4 @@ export const projects = [
 
 export const featuredProject = projects.find((p) => p.featured) ?? projects[0]
 export const otherProjects = projects.filter((p) => !p.featured)
+import { assetPath } from '../utils/assets'

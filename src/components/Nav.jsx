@@ -1,36 +1,36 @@
 import { useEffect, useState } from 'react'
+import { useSound } from './SoundContext'
 
-/** [id, label, keepOnMobile] — the small screen keeps only the two that convert. */
 const SECTIONS = [
-  ['captured-works', 'Captured work', true],
-  ['work', 'Game credits', false],
-  ['experience', 'Experience', false],
-  ['contact', 'Contact', true],
+  ['work', 'Work'],
+  ['tech', 'Tech'],
+  ['lab', 'Lab'],
+  ['about', 'About'],
+  ['contact', 'Contact'],
 ]
 
 export default function Nav() {
   const [active, setActive] = useState('')
-
+  const [menuOpen, setMenuOpen] = useState(false)
+  const { soundOn, toggleSound } = useSound()
   useEffect(() => {
-    const ids = SECTIONS.map(([id]) => id)
     const io = new IntersectionObserver(
       (entries) => {
-        const visible = entries
+        const hit = entries
           .filter((e) => e.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0]
-        if (visible) setActive(visible.target.id)
+        if (hit) setActive(hit.target.id)
       },
-      { rootMargin: '-40% 0px -50% 0px' },
+      { rootMargin: '-35% 0px -55%' },
     )
-    ids.forEach((id) => {
+    SECTIONS.forEach(([id]) => {
       const el = document.getElementById(id)
       if (el) io.observe(el)
     })
     return () => io.disconnect()
   }, [])
-
   return (
-    <nav className="nav">
+    <nav className="nav" aria-label="Primary navigation">
       <a className="nav__brand" href="#top">
         <span className="bars" aria-hidden="true">
           <span />
@@ -39,19 +39,36 @@ export default function Nav() {
         </span>
         SWAPNIL SINHA
       </a>
-
-      <div className="nav__links">
-        {SECTIONS.map(([id, label, keepOnMobile]) => (
+      <button
+        className="nav__menu"
+        onClick={() => setMenuOpen(!menuOpen)}
+        aria-expanded={menuOpen}
+        aria-controls="primary-links"
+      >
+        {menuOpen ? 'CLOSE' : 'MENU'}
+      </button>
+      <div className={menuOpen ? 'nav__links is-open' : 'nav__links'} id="primary-links">
+        {SECTIONS.map(([id, label]) => (
           <a
             key={id}
             href={`#${id}`}
-            className={keepOnMobile ? 'nav__link nav__link--keep' : 'nav__link'}
+            onClick={() => setMenuOpen(false)}
             aria-current={active === id}
           >
-            {label.toUpperCase()}
+            {label}
           </a>
         ))}
       </div>
+      <button
+        className="sound-toggle"
+        data-sonic="manual"
+        onClick={toggleSound}
+        aria-pressed={soundOn}
+        aria-label={`Turn site audio ${soundOn ? 'off' : 'on'}`}
+        title={`${soundOn ? 'Disable' : 'Enable'} atmospheric and interface audio`}
+      >
+        <span className={soundOn ? 'led led--on' : 'led'} /> SITE AUDIO {soundOn ? 'ON' : 'OFF'}
+      </button>
     </nav>
   )
 }

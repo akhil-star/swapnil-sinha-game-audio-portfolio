@@ -7,36 +7,51 @@ export default function Contact() {
   return (
     <Section id="contact">
       <ModuleHeader
-        id="07 / CONTACT"
-        title="Building something players should remember?"
+        id="12 / CONTACT"
+        title="LET’S BUILD SOMETHING THAT SOUNDS ALIVE."
         status={identity.timezone.toUpperCase()}
       />
 
       <div className="contact">
         <div data-reveal>
-          <p className="contact__pitch">
-            I&apos;d love to help make it <em>sound alive.</em>
-          </p>
+          <p className="contact__pitch">Available for game audio and technical sound design.</p>
 
           <div className="contact__verbs">
             <Chips items={VERBS} />
           </div>
 
           <p style={{ color: 'var(--dim)', maxWidth: '52ch', fontSize: 15 }}>
-            {identity.availability}. I&apos;m happy to walk through the FMOD project behind any title
-            above, compare notes on a feature, or take an implementation test.
+            {identity.availability}. For project enquiries, collaborations and studio roles, get in
+            touch directly.
           </p>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 26 }}>
-            <a className="btn btn--solid" href={`mailto:${identity.email}`}>
+            <a className="btn btn--solid" href={`mailto:${identity.email}`} data-sonic="stone">
               Email me
             </a>
-            <a className="btn" href={identity.resumePdf} download>
+            <a className="btn" href={identity.resumePdf} download data-sonic="stone">
               Download resume
             </a>
             {links.linkedin && (
-              <a className="btn" href={links.linkedin} target="_blank" rel="noreferrer noopener">
+              <a
+                className="btn"
+                href={links.linkedin}
+                target="_blank"
+                rel="noreferrer noopener"
+                data-sonic="stone"
+              >
                 LinkedIn
+              </a>
+            )}
+            {links.github && (
+              <a
+                className="btn"
+                href={links.github}
+                target="_blank"
+                rel="noreferrer noopener"
+                data-sonic="stone"
+              >
+                GitHub
               </a>
             )}
           </div>
