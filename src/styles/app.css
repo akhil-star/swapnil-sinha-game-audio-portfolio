@@ -4170,3 +4170,122 @@ body {
     transform: none;
   }
 }
+
+/* Contact identity and on-site reel viewer. */
+button.channel-card {
+  width: 100%;
+  padding: 0;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.contact-profile {
+  display: grid;
+  justify-items: center;
+  gap: 24px;
+  padding: clamp(28px, 4vw, 44px);
+  background:
+    radial-gradient(circle at 50% 18%, rgba(213, 154, 60, 0.13), transparent 38%),
+    rgba(5, 11, 6, 0.42);
+}
+.contact-profile__avatar {
+  width: clamp(112px, 12vw, 150px);
+  aspect-ratio: 1;
+  padding: 16px;
+  border: 1px solid rgba(213, 229, 157, 0.32);
+  border-radius: 50%;
+  background: linear-gradient(145deg, rgba(166, 215, 91, 0.09), rgba(213, 154, 60, 0.08)), #050a06;
+  box-shadow:
+    0 20px 52px rgba(0, 0, 0, 0.38),
+    inset 0 0 0 5px rgba(166, 215, 91, 0.035);
+}
+.contact-profile__details {
+  width: 100%;
+  grid-template-columns: 58px minmax(0, 1fr);
+  gap: 14px 16px;
+  font-size: 12.5px;
+}
+.contact-profile__details dd,
+.contact-profile__details a {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.reel-viewer {
+  width: min(1040px, calc(100vw - 32px));
+  max-width: none;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(197, 216, 158, 0.26);
+  border-radius: 24px;
+  background: #050a06;
+  color: var(--text);
+  box-shadow:
+    0 40px 120px rgba(0, 0, 0, 0.78),
+    inset 0 1px rgba(255, 255, 255, 0.06);
+}
+.reel-viewer::backdrop {
+  background: rgba(2, 5, 2, 0.9);
+  backdrop-filter: blur(10px);
+}
+.reel-viewer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(8, 14, 7, 0.96);
+}
+.reel-viewer__header h3 {
+  margin: 5px 0 0;
+  font: 400 clamp(24px, 4vw, 38px)/1 var(--display);
+}
+.reel-viewer__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.reel-viewer__actions a,
+.reel-viewer__header button {
+  flex: 0 0 auto;
+  padding: 10px 13px;
+  border: 1px solid rgba(213, 229, 157, 0.38);
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(30, 45, 20, 0.96), rgba(86, 58, 24, 0.76));
+  color: var(--text);
+  font: 650 9px/1 var(--mono);
+  letter-spacing: 0.1em;
+  cursor: pointer;
+}
+.reel-viewer__actions a {
+  color: var(--signal);
+}
+.reel-viewer__player {
+  aspect-ratio: 16 / 9;
+  background: #020402;
+}
+.reel-viewer .video-embed__external {
+  display: none;
+}
+@media (max-width: 620px) {
+  .reel-viewer {
+    width: 100vw;
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+  }
+  .reel-viewer__header {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 14px;
+  }
+  .reel-viewer__header h3 {
+    max-width: 22ch;
+    font-size: 22px;
+  }
+  .reel-viewer__actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

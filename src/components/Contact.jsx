@@ -1,7 +1,6 @@
-import { Section, ModuleHeader, Chips } from './ui'
+import { Section, ModuleHeader } from './ui'
 import { identity, links } from '../data/site'
-
-const VERBS = ['Design', 'Compose', 'Implement', 'Optimise', 'Profile', 'Ship']
+import { assetPath } from '../utils/assets'
 
 export default function Contact() {
   return (
@@ -9,16 +8,12 @@ export default function Contact() {
       <ModuleHeader
         id="12 / CONTACT"
         title="LET’S BUILD SOMETHING THAT SOUNDS ALIVE."
-        status={identity.timezone.toUpperCase()}
+        status="DIRECT CONTACT"
       />
 
       <div className="contact">
         <div data-reveal>
           <p className="contact__pitch">Available for game audio and technical sound design.</p>
-
-          <div className="contact__verbs">
-            <Chips items={VERBS} />
-          </div>
 
           <p style={{ color: 'var(--dim)', maxWidth: '52ch', fontSize: 15 }}>
             {identity.availability}. For project enquiries, collaborations and studio roles, get in
@@ -59,23 +54,26 @@ export default function Contact() {
 
         <div className="panel" data-reveal>
           <div className="panel__bar">
-            <span>DIRECT</span>
+            <span>DIRECT / PROFILE</span>
             <span className="led led--on" />
           </div>
-          <div className="panel__body">
-            <dl className="readout" style={{ fontSize: 12.5, gap: '12px 14px' }}>
+          <div className="panel__body contact-profile">
+            <img
+              className="contact-profile__avatar"
+              src={assetPath('favicon.svg')}
+              alt="Swapnil Sinha sound identity mark"
+            />
+            <dl className="readout contact-profile__details">
+              <dt>Name</dt>
+              <dd>{identity.name}</dd>
               <dt>Email</dt>
               <dd>
                 <a href={`mailto:${identity.email}`}>{identity.email}</a>
               </dd>
               <dt>Phone</dt>
-              <dd>{identity.phone}</dd>
-              <dt>Based in</dt>
-              <dd>Dehradun, India</dd>
-              <dt>Timezone</dt>
-              <dd>UTC+5:30</dd>
-              <dt>Relocation</dt>
-              <dd>Open</dd>
+              <dd>
+                <a href={`tel:${identity.phone.replace(/\s/g, '')}`}>{identity.phone}</a>
+              </dd>
             </dl>
           </div>
         </div>
