@@ -4192,10 +4192,11 @@ button.channel-card {
 .contact-profile__avatar {
   width: clamp(112px, 12vw, 150px);
   aspect-ratio: 1;
-  padding: 16px;
   border: 1px solid rgba(213, 229, 157, 0.32);
   border-radius: 50%;
   background: linear-gradient(145deg, rgba(166, 215, 91, 0.09), rgba(213, 154, 60, 0.08)), #050a06;
+  object-fit: cover;
+  object-position: 50% 38%;
   box-shadow:
     0 20px 52px rgba(0, 0, 0, 0.38),
     inset 0 0 0 5px rgba(166, 215, 91, 0.035);

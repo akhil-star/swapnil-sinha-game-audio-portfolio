@@ -60,8 +60,8 @@ export default function Contact() {
           <div className="panel__body contact-profile">
             <img
               className="contact-profile__avatar"
-              src={assetPath('favicon.svg')}
-              alt="Swapnil Sinha sound identity mark"
+              src={assetPath('media/contact-operator-avatar.jpg')}
+              alt="3D tactical audio-operator portrait representing Swapnil Sinha"
             />
             <dl className="readout contact-profile__details">
               <dt>Name</dt>
