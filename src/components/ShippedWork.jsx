@@ -119,8 +119,16 @@ export default function ShippedWork() {
                 <h2 id="project-file-title">{selected.title}</h2>
                 <p>{selected.subtitle}</p>
               </div>
-              <button type="button" onClick={() => dialogRef.current?.close()}>
-                CLOSE ×
+              <button
+                type="button"
+                className="dialog-close"
+                onClick={() => dialogRef.current?.close()}
+                aria-label={`Close ${selected.title} case file`}
+              >
+                <span>CLOSE</span>
+                <span className="close-mark" aria-hidden="true">
+                  ×
+                </span>
               </button>
             </header>
             <div className="project-file__content">

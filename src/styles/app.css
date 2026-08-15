@@ -4290,3 +4290,161 @@ button.channel-card {
     justify-content: space-between;
   }
 }
+
+/* Final clarity pass: readable microcopy, unmistakable exits and stronger direction cues. */
+.dialog-close.dialog-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 108px;
+  min-height: 48px;
+  padding: 8px 9px 8px 15px;
+  border: 1px solid rgba(255, 116, 106, 0.48);
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(42, 18, 15, 0.96), rgba(18, 23, 13, 0.96));
+  color: var(--text);
+  font: 750 10px/1 var(--mono);
+  letter-spacing: 0.11em;
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.08),
+    0 8px 24px rgba(0, 0, 0, 0.28);
+}
+.dialog-close .close-mark {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(255, 116, 106, 0.62);
+  border-radius: 50%;
+  background: var(--danger-dim);
+  color: var(--danger);
+  font: 800 20px/1 var(--body);
+  letter-spacing: 0;
+  transition:
+    background-color 160ms var(--ease),
+    color 160ms var(--ease),
+    transform 160ms var(--ease);
+}
+.dialog-close.dialog-close:hover,
+.dialog-close.dialog-close:focus-visible {
+  border-color: var(--danger);
+  color: #fff;
+}
+.dialog-close.dialog-close:focus-visible {
+  outline-color: var(--danger);
+}
+.dialog-close:hover .close-mark,
+.dialog-close:focus-visible .close-mark {
+  background: var(--danger);
+  color: #240806;
+  transform: rotate(8deg) scale(1.04);
+}
+.site-toast button {
+  width: 42px;
+  height: 42px;
+  border-color: rgba(255, 116, 106, 0.58);
+  background: var(--danger-dim);
+  color: var(--danger);
+  font-size: 20px;
+  font-weight: 800;
+}
+.nav__menu {
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+.nav__menu::before {
+  content: '☰';
+  color: var(--signal);
+  font-size: 15px;
+  line-height: 1;
+}
+.nav__menu[aria-expanded='true']::before {
+  content: '×';
+  color: var(--danger);
+  font-size: 19px;
+  font-weight: 800;
+}
+.led {
+  width: 8px;
+  height: 8px;
+  border: 1px solid rgba(241, 242, 233, 0.28);
+}
+.sound-toggle .led:not(.led--on) {
+  background: rgba(239, 176, 82, 0.36);
+  box-shadow: 0 0 0 3px rgba(239, 176, 82, 0.06);
+}
+.modhead__id::before {
+  font-size: 9px;
+  text-shadow: 0 0 8px rgba(166, 215, 91, 0.55);
+}
+.channel-card__play {
+  width: 52px;
+  height: 52px;
+  padding-left: 2px;
+  font-size: 16px;
+}
+.channel-card__body span,
+.game-link,
+.text-link,
+.post-links em,
+.obscura-product__actions span {
+  color: color-mix(in srgb, var(--signal) 88%, white);
+  font-size: 11px;
+  font-weight: 750;
+}
+.video-embed__external {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 10px 13px;
+  color: color-mix(in srgb, var(--signal) 88%, white);
+  font-size: 10px;
+  font-weight: 750;
+}
+.game-link {
+  min-height: 42px;
+}
+.signal-path i {
+  display: grid;
+  place-items: center;
+  min-width: 28px;
+  height: 28px;
+  border: 1px solid rgba(166, 215, 91, 0.28);
+  border-radius: 50%;
+  background: var(--signal-dim);
+  font-size: 17px;
+  font-weight: 800;
+}
+.tool-mark__name small {
+  color: color-mix(in srgb, var(--dim) 88%, white);
+  font-size: 10px;
+}
+.tool-mark__arrow {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(213, 154, 60, 0.3);
+  border-radius: 50%;
+  background: var(--music-dim);
+  color: var(--music);
+  font-size: 15px;
+  font-weight: 800;
+}
+@media (max-width: 900px) {
+  .nav__menu {
+    display: inline-flex;
+  }
+}
+@media (max-width: 620px) {
+  .dialog-close.dialog-close {
+    min-width: 104px;
+    min-height: 48px;
+  }
+  .channel-card__play {
+    width: 48px;
+    height: 48px;
+  }
+}

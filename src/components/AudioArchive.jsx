@@ -107,10 +107,14 @@ export default function AudioArchive({ dialogRef }) {
           </div>
           <button
             type="button"
-            className="audio-archive__close"
+            className="audio-archive__close dialog-close"
             onClick={() => dialogRef.current?.close()}
+            aria-label="Close listening archive"
           >
-            CLOSE ×
+            <span>CLOSE</span>
+            <span className="close-mark" aria-hidden="true">
+              ×
+            </span>
           </button>
         </header>
 
