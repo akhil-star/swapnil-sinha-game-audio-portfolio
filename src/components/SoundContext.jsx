@@ -7,6 +7,7 @@ export function SoundProvider({ children }) {
   const [soundOn, setSoundOn] = useState(false)
   const [notice, setNotice] = useState('')
   const activeMedia = useRef(null)
+  const ambienceRef = useRef(null)
   const interfaceClickRef = useRef(null)
   const clickVoicesRef = useRef([])
 
@@ -79,12 +80,24 @@ export function SoundProvider({ children }) {
   const toggleSound = useCallback(async () => {
     if (soundOn) {
       void playInterfaceClick()
+      ambienceRef.current?.pause()
+      if (activeMedia.current === ambienceRef.current) activeMedia.current = null
       setSoundOn(false)
       return
     }
 
     setSoundOn(true)
-    const started = await playInterfaceClick()
+    const clickStarted = playInterfaceClick()
+    const ambience = ambienceRef.current
+    if (ambience && (!activeMedia.current || activeMedia.current.paused)) {
+      ambience.volume = 0.22
+      activeMedia.current = ambience
+      void ambience.play().catch(() => {
+        if (activeMedia.current === ambience) activeMedia.current = null
+      })
+    }
+
+    const started = await clickStarted
     if (!started) notify('Interface sounds are on. Tap another button to retry audio.')
   }, [notify, playInterfaceClick, soundOn])
 
@@ -94,6 +107,13 @@ export function SoundProvider({ children }) {
   )
   return (
     <SoundContext.Provider value={value}>
+      <audio
+        ref={ambienceRef}
+        src={assetPath('audio/cigarettes-after-sex-sunsetz-cover.m4a')}
+        preload="none"
+        loop
+        aria-hidden="true"
+      />
       <audio
         ref={interfaceClickRef}
         src={assetPath('audio/ui/quest-interface-click.wav')}
