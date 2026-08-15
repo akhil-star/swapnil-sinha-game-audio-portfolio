@@ -9,23 +9,17 @@ export function SoundProvider({ children }) {
   const activeMedia = useRef(null)
   const ambienceRef = useRef(null)
   const interfaceClickRef = useRef(null)
-  const clickVoicesRef = useRef([])
+  const soundOnRef = useRef(false)
 
   const playInterfaceClick = useCallback(async () => {
     const source = interfaceClickRef.current
     if (!source || document.hidden) return false
 
-    const voices = [source, ...clickVoicesRef.current]
-    let click = voices.find((voice) => voice.paused || voice.ended)
-    if (!click) {
-      click = source.cloneNode()
-      clickVoicesRef.current = [...clickVoicesRef.current.slice(-2), click]
-    }
-
-    click.currentTime = 0
-    click.volume = 0.62
+    source.pause()
+    source.currentTime = 0
+    source.volume = 0.72
     try {
-      await click.play()
+      await source.play()
       return true
     } catch {
       return false
@@ -33,26 +27,38 @@ export function SoundProvider({ children }) {
   }, [])
 
   useEffect(() => {
-    if (!soundOn) return
-
-    const handleClick = (event) => {
+    const getInteractiveTarget = (event) => {
       const target =
         event.target instanceof Element
           ? event.target.closest('button, a[href], [role="button"]')
           : null
       if (
+        !soundOnRef.current ||
         !target ||
         target.matches(':disabled, [aria-disabled="true"]') ||
         target.dataset.sonic === 'silent' ||
         target.dataset.sonic === 'manual'
       )
-        return
-      playInterfaceClick()
+        return null
+      return target
     }
 
-    document.addEventListener('click', handleClick, true)
-    return () => document.removeEventListener('click', handleClick, true)
-  }, [playInterfaceClick, soundOn])
+    const handlePointerDown = (event) => {
+      if (event.button !== 0 || !getInteractiveTarget(event)) return
+      void playInterfaceClick()
+    }
+    const handleKeyboardClick = (event) => {
+      if (event.detail !== 0 || !getInteractiveTarget(event)) return
+      void playInterfaceClick()
+    }
+
+    document.addEventListener('pointerdown', handlePointerDown, true)
+    document.addEventListener('click', handleKeyboardClick, true)
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown, true)
+      document.removeEventListener('click', handleKeyboardClick, true)
+    }
+  }, [playInterfaceClick])
 
   useEffect(() => {
     if (!notice) return
@@ -80,12 +86,14 @@ export function SoundProvider({ children }) {
   const toggleSound = useCallback(async () => {
     if (soundOn) {
       void playInterfaceClick()
+      soundOnRef.current = false
       ambienceRef.current?.pause()
       if (activeMedia.current === ambienceRef.current) activeMedia.current = null
       setSoundOn(false)
       return
     }
 
+    soundOnRef.current = true
     setSoundOn(true)
     const clickStarted = playInterfaceClick()
     const ambience = ambienceRef.current

@@ -99,8 +99,8 @@ export function MediaImage({ alt, className = '', src, onError, onLoad, ...props
 }
 
 /** Consent-friendly YouTube embed with a reliable direct-watch fallback. */
-export function VideoEmbed({ videoId, title, poster, className = '' }) {
-  const [activated, setActivated] = useState(false)
+export function VideoEmbed({ videoId, title, poster, className = '', autoActivate = false }) {
+  const [activated, setActivated] = useState(autoActivate)
   const [loaded, setLoaded] = useState(false)
   const watchUrl = `https://www.youtube.com/watch?v=${videoId}`
 
@@ -132,7 +132,7 @@ export function VideoEmbed({ videoId, title, poster, className = '' }) {
             </div>
           )}
           <iframe
-            src={`https://www.youtube.com/embed/${videoId}?rel=0&autoplay=1`}
+            src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&autoplay=1&playsinline=1`}
             title={title}
             loading="eager"
             referrerPolicy="strict-origin-when-cross-origin"
