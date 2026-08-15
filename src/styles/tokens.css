@@ -27,6 +27,8 @@
   --music-dim: rgba(213, 154, 60, 0.16);
   --warn: #efb052;
   --warn-dim: rgba(239, 176, 82, 0.16);
+  --danger: #ff746a;
+  --danger-dim: rgba(255, 116, 106, 0.14);
 
   /* Type */
   --display: 'Instrument Serif', Georgia, serif;

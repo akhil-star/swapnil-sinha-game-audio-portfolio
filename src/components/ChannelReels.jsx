@@ -85,8 +85,16 @@ export default function ChannelReels() {
               >
                 YOUTUBE ↗
               </a>
-              <button type="button" onClick={() => dialogRef.current?.close()}>
-                CLOSE ×
+              <button
+                type="button"
+                className="dialog-close"
+                onClick={() => dialogRef.current?.close()}
+                aria-label="Close video player"
+              >
+                <span>CLOSE</span>
+                <span className="close-mark" aria-hidden="true">
+                  ×
+                </span>
               </button>
             </div>
           </div>
