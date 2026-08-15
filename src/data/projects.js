@@ -119,6 +119,7 @@ export const projects = [
     cardSummary:
       'Sound and music across multiple mobile games, implemented with developers in Unity.',
     media: {
+      layout: 'portrait',
       icon: {
         remote:
           'https://play-lh.googleusercontent.com/RI8h6yQcBQq0sFH9OfBi1RFg9wIlaaRi0wc07_fWxDhCmxB_WpMXBfYjYorct9HHYQhv7QYDEPkpc_l4x_DVcQ=w240',
@@ -168,6 +169,7 @@ export const projects = [
     cardSummary:
       'Sound and music developed from verbal references while the game was still taking shape.',
     media: {
+      layout: 'portrait',
       icon: {
         remote:
           'https://play-lh.googleusercontent.com/016jSvNpw0l9dJjIKzEzR-Ewyo1W2zb9mbMIm4ka5qIQ0cVUtfpc8Y7NMW3mqiTbABM5V4A6w3VQdnaK7Br4mxo=w240',

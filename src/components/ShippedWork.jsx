@@ -124,7 +124,9 @@ export default function ShippedWork() {
               </button>
             </header>
             <div className="project-file__content">
-              <div className="project-file__gallery">
+              <div
+                className={`project-file__gallery project-file__gallery--${selected.media?.layout ?? 'landscape'}`}
+              >
                 {selected.trailerVideoId && (
                   <figure className="project-file__video">
                     <VideoEmbed

@@ -1256,6 +1256,36 @@ button {
   font: 600 8px/1.4 var(--mono);
   letter-spacing: 0.06em;
 }
+.project-file__gallery--portrait {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr);
+  grid-auto-rows: minmax(0, 1fr);
+  gap: clamp(10px, 1.5vw, 18px);
+  padding: clamp(12px, 2vw, 22px);
+  overflow-x: auto;
+  background:
+    radial-gradient(circle at 50% 12%, rgba(178, 119, 47, 0.12), transparent 42%), #050608;
+}
+.project-file__gallery--portrait figure {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: #020403;
+}
+.project-file__gallery--portrait img {
+  min-height: 0;
+  flex: 1;
+  object-fit: contain;
+}
+.project-file__gallery--portrait figcaption {
+  position: static;
+  width: auto;
+  margin: 0;
+  border-top: 1px solid var(--line);
+  background: rgba(5, 6, 8, 0.96);
+}
 .project-file__details {
   overflow-y: auto;
   padding: clamp(28px, 4vw, 52px);
@@ -1304,6 +1334,21 @@ button {
   }
   .project-file__gallery img {
     min-height: 240px;
+  }
+  .project-file__gallery--portrait {
+    align-items: stretch;
+    gap: 12px;
+    padding: 14px;
+  }
+  .project-file__gallery--portrait figure {
+    min-width: min(74vw, 330px);
+  }
+  .project-file__gallery--portrait img {
+    width: 100%;
+    height: min(58dvh, 520px);
+    max-height: min(58dvh, 520px);
+    min-height: 0;
+    flex: 0 0 min(58dvh, 520px);
   }
   .project-file__details {
     overflow: visible;
