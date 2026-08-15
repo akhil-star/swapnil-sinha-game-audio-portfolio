@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { assetPath } from '../utils/assets'
+import { absoluteAssetPath } from '../utils/assets'
 
 function Signal() {
   const canvasRef = useRef(null)
@@ -105,7 +105,7 @@ export default function Hero() {
       id="top"
       ref={heroRef}
       style={{
-        '--hero-world-image': `url("${assetPath('artwork/verdant-ember-ringworld-backdrop.jpg')}")`,
+        '--hero-world-image': `url("${absoluteAssetPath('artwork/verdant-ember-ringworld-backdrop.jpg')}")`,
       }}
     >
       <Signal />
