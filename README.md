@@ -3,10 +3,9 @@
 A static, media-first portfolio for game audio and technical sound designer Swapnil Sinha. It was built to make the work immediately reviewable: reels, shipped credits, implementation context, and playable audio live on one page without requiring an account.
 
 - Repository: [akhil-star/swapnil-sinha-game-audio-portfolio](https://github.com/akhil-star/swapnil-sinha-game-audio-portfolio)
+- Live portfolio: [swapnilsgamez.vercel.app](https://swapnilsgamez.vercel.app/)
 - Local demo: run `npm ci && npm run dev`, then open `http://localhost:5173`
 - Production preview: run `npm run build && npm run preview`
-
-No public deployment URL is configured in this repository. Add the final hosting URL here after deployment rather than documenting an unverified link.
 
 ## Why this architecture
 
@@ -35,7 +34,8 @@ There are no serverless functions or database in the current product. If a conta
 
 ## Reliability and accessibility
 
-- YouTube embeds and non-critical images lazy-load.
+- YouTube videos use local posters and connect only after the visitor presses Play.
+- Non-critical images lazy-load and retry transient CDN failures before showing a manual fallback.
 - Large audio files use `preload="none"` and load only when requested.
 - Audio failures produce both inline status and a dismissible global notice.
 - Missing images render a readable fallback instead of a broken-image icon.
