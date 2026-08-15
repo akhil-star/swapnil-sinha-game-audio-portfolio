@@ -65,7 +65,7 @@ export default function Nav() {
         onClick={toggleSound}
         aria-pressed={soundOn}
         aria-label={`Turn site audio ${soundOn ? 'off' : 'on'}`}
-        title={`${soundOn ? 'Disable' : 'Enable'} atmospheric and interface audio`}
+        title={`${soundOn ? 'Disable' : 'Enable'} interface sounds`}
       >
         <span className={soundOn ? 'led led--on' : 'led'} /> SITE AUDIO {soundOn ? 'ON' : 'OFF'}
       </button>
