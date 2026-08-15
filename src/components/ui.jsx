@@ -1,5 +1,16 @@
 import { useState } from 'react'
 
+const imageSourceForAttempt = (src, attempt) => {
+  if (!src || attempt === 0) return src
+  try {
+    const url = new URL(src, document.baseURI)
+    url.searchParams.set('image_retry', String(attempt))
+    return url.href
+  } catch {
+    return src
+  }
+}
+
 /** Section header styled like an inspector module bar. */
 export function ModuleHeader({ id, title, sub, status }) {
   return (
@@ -43,18 +54,26 @@ export function Chips({ items }) {
 }
 
 /** Image with a readable fallback instead of a broken-image icon. */
-export function MediaImage({ alt, className = '', ...props }) {
+export function MediaImage({ alt, className = '', src, onError, onLoad, ...props }) {
   const [failed, setFailed] = useState(false)
+  const [attempt, setAttempt] = useState(0)
+
+  const retry = () => {
+    setFailed(false)
+    setAttempt((current) => current + 1)
+  }
 
   if (failed) {
     return (
       <div
         className={`media-fallback ${className}`.trim()}
-        role={alt ? 'img' : undefined}
+        role="group"
         aria-label={alt ? `${alt} unavailable` : undefined}
-        aria-hidden={alt ? undefined : true}
       >
         <span>IMAGE UNAVAILABLE</span>
+        <button type="button" onClick={retry}>
+          RETRY IMAGE
+        </button>
       </div>
     )
   }
@@ -62,10 +81,19 @@ export function MediaImage({ alt, className = '', ...props }) {
   return (
     <img
       {...props}
+      src={imageSourceForAttempt(src, attempt)}
       className={className}
       alt={alt}
       decoding="async"
-      onError={() => setFailed(true)}
+      onLoad={(event) => {
+        setFailed(false)
+        onLoad?.(event)
+      }}
+      onError={(event) => {
+        onError?.(event)
+        if (attempt < 2) retry()
+        else setFailed(true)
+      }}
     />
   )
 }
