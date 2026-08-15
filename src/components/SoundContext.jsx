@@ -7,19 +7,28 @@ export function SoundProvider({ children }) {
   const [soundOn, setSoundOn] = useState(false)
   const [notice, setNotice] = useState('')
   const activeMedia = useRef(null)
-  const ambienceRef = useRef(null)
   const interfaceClickRef = useRef(null)
+  const clickVoicesRef = useRef([])
 
-  const playInterfaceClick = useCallback(() => {
-    const click = interfaceClickRef.current
-    if (!click || document.hidden) return
+  const playInterfaceClick = useCallback(async () => {
+    const source = interfaceClickRef.current
+    if (!source || document.hidden) return false
+
+    const voices = [source, ...clickVoicesRef.current]
+    let click = voices.find((voice) => voice.paused || voice.ended)
+    if (!click) {
+      click = source.cloneNode()
+      clickVoicesRef.current = [...clickVoicesRef.current.slice(-2), click]
+    }
+
     click.currentTime = 0
-    click.volume = 0.34
-    void click.play().catch(() => {})
-  }, [])
-
-  useEffect(() => {
-    if (ambienceRef.current) ambienceRef.current.volume = 0.6
+    click.volume = 0.62
+    try {
+      await click.play()
+      return true
+    } catch {
+      return false
+    }
   }, [])
 
   useEffect(() => {
@@ -40,8 +49,8 @@ export function SoundProvider({ children }) {
       playInterfaceClick()
     }
 
-    document.addEventListener('click', handleClick)
-    return () => document.removeEventListener('click', handleClick)
+    document.addEventListener('click', handleClick, true)
+    return () => document.removeEventListener('click', handleClick, true)
   }, [playInterfaceClick, soundOn])
 
   useEffect(() => {
@@ -59,9 +68,7 @@ export function SoundProvider({ children }) {
       media.muted = false
       try {
         await media.play()
-        setSoundOn(true)
       } catch (error) {
-        setSoundOn(false)
         notify('Audio could not be played. Check your connection and try again.')
         throw error
       }
@@ -71,25 +78,14 @@ export function SoundProvider({ children }) {
 
   const toggleSound = useCallback(async () => {
     if (soundOn) {
-      playInterfaceClick()
-      activeMedia.current?.pause()
+      void playInterfaceClick()
       setSoundOn(false)
       return
     }
 
-    const ambience = ambienceRef.current
-    if (!ambience) return
-    activeMedia.current?.pause()
-    activeMedia.current = ambience
-    ambience.volume = 0.6
-    try {
-      await ambience.play()
-      setSoundOn(true)
-      playInterfaceClick()
-    } catch {
-      setSoundOn(false)
-      notify('Site audio could not be started. Check your browser permissions.')
-    }
+    setSoundOn(true)
+    const started = await playInterfaceClick()
+    if (!started) notify('Interface sounds are on. Tap another button to retry audio.')
   }, [notify, playInterfaceClick, soundOn])
 
   const value = useMemo(
@@ -99,15 +95,10 @@ export function SoundProvider({ children }) {
   return (
     <SoundContext.Provider value={value}>
       <audio
-        ref={ambienceRef}
-        src={assetPath('audio/cigarettes-after-sex-sunsetz-cover.m4a')}
-        preload="none"
-        loop
-      />
-      <audio
         ref={interfaceClickRef}
         src={assetPath('audio/ui/quest-interface-click.wav')}
         preload="auto"
+        aria-hidden="true"
       />
       {notice && (
         <div className="site-toast" role="alert" aria-live="assertive">
