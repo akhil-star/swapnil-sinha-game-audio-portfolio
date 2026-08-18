@@ -5,6 +5,8 @@ import { useSound } from './SoundContext'
 
 function ProjectCard({ project, index, onOpen }) {
   const previewRef = useRef(null)
+  const { requestPlay } = useSound()
+  const [previewSoundOn, setPreviewSoundOn] = useState(false)
   const shots = project.media?.shots ?? []
   const shot = shots[0]
   const hasGallery = shots.length > 1
@@ -14,14 +16,34 @@ function ProjectCard({ project, index, onOpen }) {
   const playPreview = () => {
     const preview = previewRef.current
     if (!preview || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    preview.muted = !previewSoundOn
+    preview.volume = 0.72
     preview.play().catch(() => {})
   }
 
   const pausePreview = () => {
     const preview = previewRef.current
     if (!preview) return
+    preview.muted = true
     preview.pause()
     preview.currentTime = 0
+    setPreviewSoundOn(false)
+  }
+
+  const togglePreviewSound = async () => {
+    const preview = previewRef.current
+    if (!preview) return
+    const next = !previewSoundOn
+    preview.muted = !next
+    preview.volume = 0.72
+    setPreviewSoundOn(next)
+    if (!next) return
+    try {
+      await requestPlay(preview)
+    } catch {
+      preview.muted = true
+      setPreviewSoundOn(false)
+    }
   }
 
   return (
@@ -82,10 +104,27 @@ function ProjectCard({ project, index, onOpen }) {
           )
         )}
         {hasVideoPreview && (
-          <span className="proj__preview-cue">
-            <span className="proj__preview-cue--hover">HOVER TO PREVIEW · FULL AUDIO INSIDE</span>
-            <span className="proj__preview-cue--touch">PLAY DEMO INSIDE</span>
-          </span>
+          <>
+            <span className="proj__preview-cue">
+              <span className="proj__preview-cue--hover">HOVER TO PREVIEW</span>
+              <span className="proj__preview-cue--touch">PLAY DEMO INSIDE</span>
+            </span>
+            <button
+              type="button"
+              className={`proj__preview-audio ${previewSoundOn ? 'is-on' : ''}`}
+              data-sonic="silent"
+              aria-pressed={previewSoundOn}
+              aria-label={`${previewSoundOn ? 'Mute' : 'Hear'} Rahasya thumbnail preview`}
+              onClick={togglePreviewSound}
+            >
+              <span className="proj__preview-audio-icon" aria-hidden="true">
+                <i />
+                <i />
+                <i />
+              </span>
+              <span>PREVIEW SOUND {previewSoundOn ? 'ON' : 'OFF'}</span>
+            </button>
+          </>
         )}
         {!project.featured && (
           <div className="proj__hover-detail">
@@ -124,7 +163,10 @@ function ProjectCard({ project, index, onOpen }) {
             type="button"
             className="game-link game-link--button"
             data-sonic="stone"
-            onClick={() => onOpen(project)}
+            onClick={() => {
+              if (hasVideoPreview) pausePreview()
+              onOpen(project)
+            }}
           >
             OPEN CASE FILE ↗
           </button>
