@@ -1,37 +1,106 @@
 import { useRef, useState } from 'react'
-import { Section, ModuleHeader, Chips, MediaImage, VideoEmbed } from './ui'
+import { Section, ModuleHeader, Chips, MediaImage } from './ui'
 import { projects, resolveMedia } from '../data/projects'
 import { useSound } from './SoundContext'
 
 function ProjectCard({ project, index, onOpen }) {
-  const shot = project.media?.shots?.[0]
-  const mobileGallery = ['battlebucks', 'molotov-flip'].includes(project.id)
+  const previewRef = useRef(null)
+  const shots = project.media?.shots ?? []
+  const shot = shots[0]
+  const hasGallery = shots.length > 1
+  const hasVideoPreview = project.id === 'rahasya' && Boolean(project.demoVideo)
+  const galleryLayout = project.media?.layout === 'portrait' ? 'portrait' : 'landscape'
+
+  const playPreview = () => {
+    const preview = previewRef.current
+    if (!preview || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    preview.play().catch(() => {})
+  }
+
+  const pausePreview = () => {
+    const preview = previewRef.current
+    if (!preview) return
+    preview.pause()
+    preview.currentTime = 0
+  }
+
   return (
     <article
-      className={`proj ${project.featured ? 'proj--featured' : ''}`}
+      className={`proj ${project.featured ? 'proj--featured' : 'proj--secondary'} ${hasVideoPreview ? 'proj--video-preview' : ''}`}
       data-accent={project.accent}
       data-platform={project.platform.includes('PC') ? 'PC' : 'MOBILE'}
       data-reveal
+      onMouseEnter={hasVideoPreview ? playPreview : undefined}
+      onMouseLeave={hasVideoPreview ? pausePreview : undefined}
+      onFocusCapture={hasVideoPreview ? playPreview : undefined}
+      onBlurCapture={
+        hasVideoPreview
+          ? (event) => {
+              if (!event.currentTarget.contains(event.relatedTarget)) pausePreview()
+            }
+          : undefined
+      }
     >
-      <div className={mobileGallery ? 'proj__shot proj__shot--gallery' : 'proj__shot'}>
-        {mobileGallery
-          ? project.media.shots
-              .slice(0, 3)
-              .map((item) => (
-                <MediaImage
-                  key={item.local}
-                  src={resolveMedia(item.remote, item.local)}
-                  alt={item.caption || ''}
-                  loading="lazy"
-                />
-              ))
-          : shot && (
+      <div
+        className={
+          hasGallery
+            ? `proj__shot proj__shot--gallery proj__shot--gallery-${galleryLayout}`
+            : 'proj__shot'
+        }
+      >
+        {hasVideoPreview ? (
+          <video
+            ref={previewRef}
+            className="proj__preview-video"
+            src={project.demoVideo.src}
+            poster={shot ? resolveMedia(shot.remote, shot.local) : undefined}
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            aria-hidden="true"
+            tabIndex="-1"
+          />
+        ) : hasGallery ? (
+          shots
+            .slice(0, 3)
+            .map((item) => (
               <MediaImage
-                src={resolveMedia(shot.remote, shot.local)}
-                alt={shot.caption || ''}
-                loading="lazy"
+                key={item.local}
+                src={resolveMedia(item.remote, item.local)}
+                alt={item.caption || `${project.title} gameplay`}
+                loading="eager"
               />
-            )}
+            ))
+        ) : (
+          shot && (
+            <MediaImage
+              src={resolveMedia(shot.remote, shot.local)}
+              alt={shot.caption || ''}
+              loading="eager"
+            />
+          )
+        )}
+        {hasVideoPreview && (
+          <span className="proj__preview-cue">
+            <span className="proj__preview-cue--hover">HOVER TO PREVIEW · FULL AUDIO INSIDE</span>
+            <span className="proj__preview-cue--touch">PLAY DEMO INSIDE</span>
+          </span>
+        )}
+        {!project.featured && (
+          <div className="proj__hover-detail">
+            <span className="field-label">CASE NOTE</span>
+            <p>{project.highlights?.[0] ?? project.cardSummary}</p>
+          </div>
+        )}
+        {project.media?.icon && (
+          <MediaImage
+            className="proj__icon"
+            src={resolveMedia(project.media.icon.remote, project.media.icon.local)}
+            alt={`${project.title} icon`}
+            loading="eager"
+          />
+        )}
         <span className="proj__tag">
           {project.platform} · {project.status}
         </span>
@@ -111,7 +180,14 @@ export default function ShippedWork() {
         </div>
       )}
       {selected && (
-        <dialog className="project-file" ref={dialogRef} aria-labelledby="project-file-title">
+        <dialog
+          className={`project-file ${selected.demoVideo ? 'project-file--video' : ''}`}
+          ref={dialogRef}
+          aria-labelledby="project-file-title"
+          onClose={(event) => {
+            event.currentTarget.querySelectorAll('video').forEach((video) => video.pause())
+          }}
+        >
           <div className="project-file__shell">
             <header className="project-file__header">
               <div>
@@ -133,13 +209,15 @@ export default function ShippedWork() {
             </header>
             <div className="project-file__content">
               <div
-                className={`project-file__gallery project-file__gallery--${selected.media?.layout ?? 'landscape'}`}
+                className={`project-file__gallery project-file__gallery--${selected.media?.layout ?? 'landscape'} ${selected.demoVideo ? 'project-file__gallery--video' : ''}`}
               >
-                {selected.trailerVideoId && (
+                {selected.demoVideo && (
                   <figure className="project-file__video">
-                    <VideoEmbed
-                      videoId={selected.trailerVideoId}
-                      title={`${selected.title} trailer`}
+                    <video
+                      controls
+                      playsInline
+                      preload="metadata"
+                      aria-label={selected.demoVideo.caption}
                       poster={
                         selected.media?.shots?.[0]
                           ? resolveMedia(
@@ -148,30 +226,37 @@ export default function ShippedWork() {
                             )
                           : undefined
                       }
-                    />
-                    <figcaption>Official trailer</figcaption>
+                    >
+                      <source src={selected.demoVideo.src} type="video/mp4" />
+                      Your browser does not support embedded video.{' '}
+                      <a href={selected.demoVideo.src}>Open the video directly.</a>
+                    </video>
+                    <figcaption>{selected.demoVideo.caption}</figcaption>
                   </figure>
                 )}
-                {selected.media?.shots?.map((shot) => (
-                  <figure key={shot.local}>
-                    <MediaImage
-                      src={resolveMedia(shot.remote, shot.local)}
-                      alt={shot.caption || `${selected.title} gameplay screenshot`}
-                      loading="lazy"
-                    />
-                    {shot.caption && <figcaption>{shot.caption}</figcaption>}
-                  </figure>
-                ))}
+                {!selected.demoVideo &&
+                  selected.media?.shots?.map((shot) => (
+                    <figure key={shot.local}>
+                      <MediaImage
+                        src={resolveMedia(shot.remote, shot.local)}
+                        alt={shot.caption || `${selected.title} gameplay screenshot`}
+                        loading="lazy"
+                      />
+                      {shot.caption && <figcaption>{shot.caption}</figcaption>}
+                    </figure>
+                  ))}
               </div>
               <aside className="project-file__details">
                 <span className="field-label">{selected.role.join(' · ')}</span>
-                <h3>What brought it to life</h3>
+                <h3>Audio brief</h3>
                 <p>{selected.summary}</p>
+                <h4>Selected contributions</h4>
                 <ul>
                   {selected.highlights?.map((highlight) => (
                     <li key={highlight}>{highlight}</li>
                   ))}
                 </ul>
+                <span className="field-label project-file__stack-label">PIPELINE</span>
                 <Chips items={selected.stack} />
                 <div className="project-file__actions">
                   <a
@@ -183,17 +268,6 @@ export default function ShippedWork() {
                   >
                     {selected.hrefLabel} ↗
                   </a>
-                  {selected.trailerHref && (
-                    <a
-                      className="btn"
-                      data-sonic="stone"
-                      href={selected.trailerHref}
-                      target="_blank"
-                      rel="noreferrer noopener"
-                    >
-                      Watch trailer ↗
-                    </a>
-                  )}
                 </div>
               </aside>
             </div>

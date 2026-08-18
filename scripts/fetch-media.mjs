@@ -5,8 +5,6 @@
  *
  *   npm run fetch:media
  *
- * Then set USE_LOCAL_MEDIA = true at the top of src/data/projects.js.
- *
  * Store CDN paths change when a developer re-uploads their assets, which is
  * exactly the kind of thing that breaks while a recruiter is looking at it.
  */
@@ -91,5 +89,5 @@ if (failed > 0) {
       'src/data/projects.js.',
   )
 } else {
-  console.log('Now set USE_LOCAL_MEDIA = true in src/data/projects.js.')
+  console.log('All remotely sourced project images are available locally.')
 }

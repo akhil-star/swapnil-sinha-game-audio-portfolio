@@ -74,6 +74,12 @@ export default function Contact() {
               <dd>
                 <a href={`tel:${identity.phone.replace(/\s/g, '')}`}>{identity.phone}</a>
               </dd>
+              <dt>LinkedIn</dt>
+              <dd>
+                <a href={links.linkedin} target="_blank" rel="noreferrer noopener">
+                  linkedin.com/in/swapnil-sinha-a283472a5
+                </a>
+              </dd>
             </dl>
           </div>
         </div>

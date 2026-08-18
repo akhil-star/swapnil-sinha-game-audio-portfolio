@@ -628,6 +628,25 @@ button {
   }
 }
 
+/* The compact navigation is the only state change that benefits from an added
+   flow cue; keep it compositor-only and respect the visitor's motion setting. */
+@media (max-width: 900px) and (prefers-reduced-motion: no-preference) {
+  .nav__links.is-open {
+    animation: nav-panel-arrive 220ms var(--ease) both;
+    transform-origin: top center;
+  }
+}
+@keyframes nav-panel-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* Content visibility is never animation-dependent. */
 [data-reveal],
 [data-reveal].is-in {
@@ -1767,7 +1786,7 @@ button {
 
 /* Fixed verdant-ember world layer behind the glass system. */
 .world-backdrop {
-  --world-shift: -45px;
+  --world-shift: -40px;
   position: fixed;
   z-index: 0;
   inset: -9vh -5vw;
@@ -2781,7 +2800,37 @@ body::before {
   object-fit: contain;
   filter: none;
 }
+.proj__shot--gallery-landscape {
+  grid-template-columns: 1.45fr 0.75fr;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+}
+.proj__shot--gallery-landscape > img:first-child {
+  grid-row: 1 / -1;
+}
+.proj__shot--gallery-landscape > img:not(:first-child) {
+  object-fit: cover;
+}
+.proj__shot .proj__icon {
+  position: absolute;
+  z-index: 2;
+  right: 12px;
+  bottom: 12px;
+  width: 54px;
+  height: 54px;
+  min-height: 0;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: 13px;
+  background: #080b09;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.52);
+  object-fit: cover;
+  transform: none;
+  filter: none;
+}
 .proj:hover .proj__shot--gallery img {
+  transform: none;
+  filter: none;
+}
+.proj:hover .proj__shot .proj__icon {
   transform: none;
   filter: none;
 }
@@ -3602,6 +3651,206 @@ main::before {
   }
 }
 
+/* 2026 interaction polish: responsive motion, visible progress and tactile feedback. */
+.nav {
+  overflow: hidden;
+}
+.nav__progress {
+  --scroll-progress: 0;
+  position: absolute;
+  right: 18px;
+  bottom: 0;
+  left: 18px;
+  height: 1px;
+  overflow: hidden;
+  pointer-events: none;
+}
+.nav__progress i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--signal), var(--music));
+  box-shadow: 0 0 12px rgba(166, 215, 91, 0.72);
+  transform: scaleX(var(--scroll-progress));
+  transform-origin: left;
+  transition: transform 80ms linear;
+}
+@media (hover: hover) and (pointer: fine) {
+  html,
+  body {
+    cursor:
+      url('/cursors/ember-pointer.svg') 3 2,
+      auto;
+  }
+  a,
+  button,
+  label,
+  select,
+  input[type='button'],
+  input[type='checkbox'],
+  input[type='range'],
+  input[type='radio'],
+  input[type='submit'] {
+    cursor: pointer;
+  }
+  input:not([type]),
+  input[type='email'],
+  input[type='search'],
+  input[type='text'],
+  textarea,
+  [contenteditable='true'] {
+    cursor: text;
+  }
+}
+.btn,
+.game-link--button {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.btn::after,
+.game-link--button::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: -80% auto -80% -38%;
+  width: 28%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transform: skewX(-18deg) translateX(-220%);
+  transition: transform 680ms var(--ease);
+}
+.btn:hover::after,
+.btn:focus-visible::after,
+.game-link--button:hover::after,
+.game-link--button:focus-visible::after {
+  transform: skewX(-18deg) translateX(620%);
+}
+.hero__title em {
+  text-shadow: 0 0 42px rgba(166, 215, 91, 0.16);
+}
+.project-file[open],
+.audio-archive[open],
+.reel-viewer[open] {
+  animation: dialog-arrive 480ms var(--ease) both;
+}
+.project-file[open]::backdrop,
+.audio-archive[open]::backdrop,
+.reel-viewer[open]::backdrop {
+  animation: backdrop-arrive 360ms ease-out both;
+}
+@keyframes dialog-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(22px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes backdrop-arrive {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .reveal-ready [data-reveal] {
+    opacity: 0;
+    transform: translateY(22px) scale(0.992);
+    transition:
+      opacity 700ms var(--ease),
+      transform 700ms var(--ease);
+  }
+  .reveal-ready [data-reveal].is-in {
+    opacity: 1;
+    transform: none;
+  }
+  .reveal-ready .proj-grid > [data-reveal]:nth-child(even),
+  .reveal-ready .channel-shelf > [data-reveal]:nth-child(2),
+  .reveal-ready .tech-grid > [data-reveal]:nth-child(even) {
+    transition-delay: 70ms;
+  }
+  .reveal-ready .channel-shelf > [data-reveal]:nth-child(3),
+  .reveal-ready .tech-grid > [data-reveal]:nth-child(3n) {
+    transition-delay: 140ms;
+  }
+}
+@media (prefers-reduced-motion: reduce), (hover: none), (pointer: coarse) {
+  .btn::after,
+  .game-link--button::after {
+    display: none;
+  }
+}
+
+/* QA refinements: readable metadata, comfortable controls and low-cost mobile surfaces. */
+.modhead__id,
+.modhead__status {
+  background: rgba(5, 10, 6, 0.72);
+  color: color-mix(in srgb, var(--text) 70%, var(--dim));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.retro-screen__credit {
+  margin: -2px 0 10px;
+  color: color-mix(in srgb, #83d4ff 70%, var(--dim));
+  font: 650 10px/1.35 var(--mono);
+  letter-spacing: 0.06em;
+}
+.retro-playlist__track {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+.retro-playlist__track small {
+  overflow: hidden;
+  color: #7e8a92;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.retro-playlist li.is-active .retro-playlist__track small {
+  color: #8ebfd4;
+}
+.retro-playlist button {
+  min-height: 58px;
+}
+.project-file__details h4 {
+  margin: 30px 0 12px;
+  color: var(--text);
+  font: 700 11px/1.3 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.project-file__details h4 + ul {
+  margin-top: 0;
+}
+.project-file__stack-label {
+  display: block;
+  margin-bottom: 11px;
+}
+input[type='range'] {
+  min-height: 32px;
+}
+.transport {
+  min-width: 40px;
+  min-height: 40px;
+}
+.transport--primary {
+  min-width: 44px;
+  min-height: 44px;
+}
+@media (max-width: 700px) {
+  .nav__brand,
+  .sound-toggle {
+    font-size: 10px;
+  }
+}
+
 /* Final wrapper cleanup: individual cards keep strokes; collections stay frameless. */
 .process,
 .tech-grid,
@@ -3862,11 +4111,15 @@ body {
 .project-file__video {
   aspect-ratio: 16 / 9;
 }
-.project-file__video iframe {
+.project-file__video iframe,
+.project-file__video video {
+  display: block;
   width: 100%;
   height: 100%;
   min-height: 300px;
   border: 0;
+  background: #020403;
+  object-fit: contain;
 }
 .project-file__actions {
   display: flex;
@@ -3886,8 +4139,125 @@ body {
   .project-file__video {
     min-width: 88vw;
   }
-  .project-file__video iframe {
+  .project-file__video iframe,
+  .project-file__video video {
     min-height: 240px;
+  }
+}
+
+/* Rahasya is the lead case study: one uninterrupted video stage in the case file
+   and a lightweight, muted preview on devices that genuinely support hover. */
+.proj--featured {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.65fr);
+}
+.proj--featured .proj__shot {
+  aspect-ratio: 16 / 9;
+}
+.proj__preview-video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #020403;
+  object-fit: contain;
+  filter: saturate(0.82) contrast(1.03);
+  transition: filter 320ms var(--ease);
+}
+.proj--video-preview:hover .proj__preview-video,
+.proj--video-preview:focus-within .proj__preview-video {
+  filter: saturate(1) contrast(1.03);
+}
+.proj__preview-cue {
+  position: absolute;
+  z-index: 3;
+  bottom: 14px;
+  left: 14px;
+  padding: 7px 10px;
+  border: 1px solid rgba(213, 229, 157, 0.28);
+  border-radius: 999px;
+  background: rgba(3, 7, 3, 0.82);
+  color: var(--text);
+  font: 700 8px/1 var(--mono);
+  letter-spacing: 0.09em;
+  backdrop-filter: blur(10px);
+}
+.proj__preview-cue--touch {
+  display: none;
+}
+.project-file--video .project-file__content {
+  grid-template-columns: minmax(0, 1.55fr) minmax(330px, 0.65fr);
+}
+.project-file__gallery--video {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: clamp(12px, 2vw, 24px);
+}
+.project-file__gallery--video .project-file__video {
+  display: flex;
+  width: 100%;
+  min-height: 0;
+  margin: 0;
+  flex-direction: column;
+  aspect-ratio: auto;
+  border: 1px solid rgba(213, 229, 157, 0.16);
+  border-radius: 18px;
+  background: #020403;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+}
+.project-file__gallery--video .project-file__video video {
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  aspect-ratio: 16 / 9;
+  border-radius: 18px 18px 0 0;
+  object-fit: contain;
+}
+.project-file__gallery--video .project-file__video figcaption {
+  position: static;
+  width: auto;
+  padding: 11px 14px;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  background: rgba(5, 9, 5, 0.96);
+  color: var(--dim);
+  font-size: 9px;
+}
+@media (max-width: 900px) {
+  .proj--featured {
+    display: block;
+  }
+}
+@media (max-width: 760px) {
+  .project-file--video .project-file__content {
+    display: block;
+  }
+  .project-file__gallery--video {
+    display: block;
+    overflow: visible;
+    padding: 12px;
+  }
+  .project-file__gallery--video .project-file__video {
+    width: 100%;
+    min-width: 0;
+  }
+  .project-file__gallery--video .project-file__video video {
+    min-height: 0;
+  }
+}
+@media (hover: none), (pointer: coarse) {
+  .proj__preview-cue--hover {
+    display: none;
+  }
+  .proj__preview-cue--touch {
+    display: inline;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .proj__preview-video {
+    transition: none;
   }
 }
 @media (max-width: 700px) {
@@ -3908,28 +4278,6 @@ body {
   }
 }
 
-/* Keep the hero world explicit: the fixed scenery continues through the site,
-   while this local layer guarantees the opening ruin vista is crisp and legible. */
-.hero::before {
-  content: '';
-  position: absolute;
-  z-index: 0;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(
-      90deg,
-      rgba(2, 7, 3, 0.3) 0%,
-      rgba(2, 7, 3, 0.08) 48%,
-      rgba(8, 5, 1, 0.03) 100%
-    ),
-    var(--hero-world-image);
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  filter: saturate(1.08) contrast(1.03) brightness(1.08);
-  transform: scale(1.015);
-}
 .hero__canvas {
   z-index: 2;
 }
@@ -3942,10 +4290,74 @@ body {
 .hero__inner {
   z-index: 3;
 }
-@media (max-width: 700px) {
-  .hero::before {
-    background-position: 61% center;
-    filter: saturate(1.04) contrast(1.02) brightness(0.98);
+/* Released-work hierarchy: Rahasya leads; the remaining titles form one row. */
+@media (min-width: 901px) {
+  .proj-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .proj--featured {
+    grid-column: 1 / -1;
+  }
+}
+.proj--secondary {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+.proj--secondary .proj__shot {
+  aspect-ratio: 16 / 10;
+}
+.proj--secondary .proj__body {
+  flex: 1;
+  grid-template-rows: auto auto auto 1fr;
+}
+.proj--secondary .proj__title {
+  font-size: clamp(26px, 2.5vw, 38px);
+}
+.proj--secondary .proj__foot {
+  align-items: flex-start;
+  flex-direction: column;
+}
+.proj__hover-detail {
+  position: absolute;
+  z-index: 3;
+  right: 12px;
+  bottom: 12px;
+  left: 12px;
+  padding: 14px 76px 14px 14px;
+  border: 1px solid rgba(213, 229, 157, 0.2);
+  border-radius: 14px;
+  background: rgba(3, 8, 4, 0.9);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.42);
+  opacity: 0;
+  transform: translate3d(0, 8px, 0);
+  transition:
+    opacity 220ms var(--ease),
+    transform 320ms var(--ease);
+  backdrop-filter: blur(12px);
+  pointer-events: none;
+}
+.proj__hover-detail p {
+  margin: 7px 0 0;
+  color: var(--dim);
+  font-size: 11px;
+  line-height: 1.5;
+}
+@media (hover: hover) and (pointer: fine) {
+  .proj--secondary:hover .proj__hover-detail,
+  .proj--secondary:focus-within .proj__hover-detail {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+@media (hover: none), (pointer: coarse) {
+  .proj__hover-detail {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .proj__hover-detail {
+    transition: none;
   }
 }
 
@@ -4447,4 +4859,82 @@ button.channel-card {
     width: 48px;
     height: 48px;
   }
+}
+
+/* Keep long-page scrolling inexpensive on touch devices without changing the visual structure. */
+@media (max-width: 700px) {
+  .channel-card,
+  .reel-feature,
+  .proj,
+  .retro-deck,
+  .signal-path,
+  .tech-grid article,
+  .process li,
+  .job,
+  .panel,
+  .obscura-product,
+  .obscura__counts article,
+  .obscura-sample,
+  .pocket,
+  .post-links > a,
+  .post-links > button,
+  .education-panel,
+  .toolkit-panel,
+  .card {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* Preserve the complete visual treatment on capable machines. Only devices
+   that report limited CPU or memory receive the inexpensive surface variant. */
+.performance-lite body {
+  background-attachment: scroll;
+}
+.performance-lite .world-backdrop {
+  --world-shift: 0px;
+  filter: none;
+  transform: scale(1.04);
+  will-change: auto;
+}
+.performance-lite .channel-card,
+.performance-lite .reel-feature,
+.performance-lite .proj,
+.performance-lite .retro-deck,
+.performance-lite .signal-path,
+.performance-lite .tech-grid article,
+.performance-lite .process li,
+.performance-lite .job,
+.performance-lite .panel,
+.performance-lite .obscura-product,
+.performance-lite .obscura__counts article,
+.performance-lite .obscura-sample,
+.performance-lite .pocket,
+.performance-lite .post-links > a,
+.performance-lite .post-links > button,
+.performance-lite .education-panel,
+.performance-lite .toolkit-panel,
+.performance-lite .card {
+  background-color: rgba(6, 13, 7, 0.88);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.performance-lite .channel-card::before,
+.performance-lite .proj::before,
+.performance-lite .tech-grid article::before,
+.performance-lite .process li::before,
+.performance-lite .obscura-product::before,
+.performance-lite .post-links > a::before,
+.performance-lite .post-links > button::before {
+  display: none;
+}
+.performance-lite .channel-card:hover,
+.performance-lite .proj:hover,
+.performance-lite .tech-grid article:hover,
+.performance-lite .process li:hover,
+.performance-lite .obscura-product:hover,
+.performance-lite .post-links > a:hover,
+.performance-lite .post-links > button:hover {
+  translate: 0 -2px;
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.34);
 }

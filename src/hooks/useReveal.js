@@ -1,18 +1,22 @@
-import { useEffect, useRef } from 'react'
+import { useLayoutEffect, useRef } from 'react'
 
 /** Adds .is-in to [data-reveal] descendants as they enter the viewport. */
 export function useReveal() {
   const root = useRef(null)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const node = root.current
     if (!node) return
 
     const targets = node.querySelectorAll('[data-reveal]')
-    if (!('IntersectionObserver' in window)) {
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    if (reducedMotion || !('IntersectionObserver' in window)) {
       targets.forEach((target) => target.classList.add('is-in'))
       return
     }
+
+    node.classList.add('reveal-ready')
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -27,7 +31,10 @@ export function useReveal() {
     )
 
     targets.forEach((target) => observer.observe(target))
-    return () => observer.disconnect()
+    return () => {
+      observer.disconnect()
+      node.classList.remove('reveal-ready')
+    }
   }, [])
 
   return root

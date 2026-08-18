@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react'
-import { absoluteAssetPath } from '../utils/assets'
 
 function Signal() {
   const canvasRef = useRef(null)
@@ -71,43 +70,8 @@ function Signal() {
 }
 
 export default function Hero() {
-  const heroRef = useRef(null)
-  useEffect(() => {
-    const hero = heroRef.current
-    if (
-      !hero ||
-      matchMedia('(prefers-reduced-motion: reduce)').matches ||
-      matchMedia('(max-width: 768px)').matches
-    )
-      return
-    let raf = 0
-    const update = () => {
-      raf = 0
-      const progress = Math.min(
-        1,
-        Math.max(0, -hero.getBoundingClientRect().top / hero.offsetHeight),
-      )
-      hero.style.setProperty('--hero-scroll', progress)
-    }
-    const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(update)
-    }
-    addEventListener('scroll', onScroll, { passive: true })
-    update()
-    return () => {
-      cancelAnimationFrame(raf)
-      removeEventListener('scroll', onScroll)
-    }
-  }, [])
   return (
-    <header
-      className="hero"
-      id="top"
-      ref={heroRef}
-      style={{
-        '--hero-world-image': `url("${absoluteAssetPath('artwork/verdant-ember-ringworld-backdrop.jpg')}")`,
-      }}
-    >
+    <header className="hero" id="top">
       <Signal />
       <div className="hero__scrim" />
       <div className="shell hero__inner">

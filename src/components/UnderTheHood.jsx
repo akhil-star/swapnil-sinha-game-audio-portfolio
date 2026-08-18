@@ -28,7 +28,7 @@ export default function UnderTheHood() {
         id="05 / TECHNICAL AUDIO"
         title="UNDER THE HOOD"
         sub="Interactive systems that connect sound to gameplay."
-        status="FMOD · UNITY · C#"
+        status="FMOD · WWISE · UNITY · UNREAL · C#"
       />
       <div
         className="signal-path"

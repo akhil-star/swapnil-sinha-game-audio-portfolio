@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { assetPath } from '../utils/assets'
 import { useSound } from './SoundContext'
 
@@ -47,55 +47,84 @@ const formatTime = (seconds) =>
 
 export default function AudioArchive({ dialogRef }) {
   const audioRef = useRef(null)
+  const playIntentRef = useRef(false)
+  const switchingTrackRef = useRef(false)
   const { requestPlay } = useSound()
   const [collectionKey, setCollectionKey] = useState('mix')
   const [active, setActive] = useState(0)
   const [playing, setPlaying] = useState(false)
+  const [playRequested, setPlayRequested] = useState(false)
   const [status, setStatus] = useState('READY')
   const [time, setTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const collection = collections[collectionKey]
   const track = collection.tracks[active]
 
+  const setPlayIntent = useCallback((next) => {
+    playIntentRef.current = next
+    setPlayRequested(next)
+  }, [])
+
+  const pause = useCallback((nextStatus = 'PAUSED') => {
+    switchingTrackRef.current = false
+    setPlayIntent(false)
+    setStatus(nextStatus)
+    audioRef.current?.pause()
+  }, [setPlayIntent])
+
   const playTrack = async (index) => {
     const audio = audioRef.current
-    if (index === active && !audio.paused) {
-      audio.pause()
+    if (index === active && (playIntentRef.current || !audio.paused)) {
+      pause()
       return
     }
     if (index !== active) {
+      switchingTrackRef.current = true
+      setPlayIntent(false)
       audio.pause()
       setActive(index)
+      setTime(0)
+      setDuration(0)
       audio.src = collection.tracks[index].src
       audio.load()
     }
+    setPlayIntent(true)
     setStatus('LOADING')
     try {
-      await requestPlay(audio)
+      const started = await requestPlay(audio)
+      if (!started && playIntentRef.current) {
+        switchingTrackRef.current = false
+        setPlayIntent(false)
+        setStatus('READY')
+      }
     } catch {
+      switchingTrackRef.current = false
+      setPlayIntent(false)
       setPlaying(false)
       setStatus('AUDIO UNAVAILABLE')
     }
   }
 
   const switchCollection = (key) => {
-    audioRef.current?.pause()
+    const audio = audioRef.current
+    pause('READY')
     setCollectionKey(key)
     setActive(0)
     setTime(0)
     setDuration(0)
     setStatus('READY')
+    audio.src = collections[key].tracks[0].src
+    audio.load()
   }
 
   useEffect(() => {
     const dialog = dialogRef.current
     const stop = () => {
-      audioRef.current?.pause()
-      setStatus('PAUSED')
+      pause()
     }
     dialog?.addEventListener('close', stop)
     return () => dialog?.removeEventListener('close', stop)
-  }, [dialogRef])
+  }, [dialogRef, pause])
 
   return (
     <dialog className="audio-archive" ref={dialogRef} aria-labelledby="audio-archive-title">
@@ -142,22 +171,41 @@ export default function AudioArchive({ dialogRef }) {
             </div>
             <audio
               ref={audioRef}
-              src={track.src}
-              preload="none"
+              src={collections.mix.tracks[0].src}
+              preload="metadata"
               onLoadStart={() => setStatus('LOADING')}
-              onCanPlay={() => setStatus('READY')}
+              onCanPlay={(event) => {
+                if (event.currentTarget.paused && !playIntentRef.current) setStatus('READY')
+              }}
               onWaiting={() => setStatus('BUFFERING')}
               onPlay={() => {
+                switchingTrackRef.current = false
+                setPlayIntent(true)
+                setPlaying(true)
+                setStatus('PLAYING')
+              }}
+              onPlaying={() => {
+                switchingTrackRef.current = false
+                setPlayIntent(true)
                 setPlaying(true)
                 setStatus('PLAYING')
               }}
               onPause={() => {
                 setPlaying(false)
-                setStatus('PAUSED')
+                if (!switchingTrackRef.current) {
+                  setPlayIntent(false)
+                  setStatus('PAUSED')
+                }
               }}
               onError={() => {
+                switchingTrackRef.current = false
                 setPlaying(false)
-                setStatus('AUDIO UNAVAILABLE')
+                if (playIntentRef.current) {
+                  setPlayIntent(false)
+                  setStatus('AUDIO UNAVAILABLE')
+                } else {
+                  setStatus('READY')
+                }
               }}
               onTimeUpdate={(event) => setTime(event.currentTarget.currentTime)}
               onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)}
@@ -167,10 +215,11 @@ export default function AudioArchive({ dialogRef }) {
               <button
                 className="archive-transport__play"
                 data-sonic="stone"
-                onClick={() => (playing ? audioRef.current.pause() : playTrack(active))}
-                aria-label={`${playing ? 'Pause' : 'Play'} ${track.title}`}
+                onClick={() => playTrack(active)}
+                aria-pressed={playing || playRequested}
+                aria-label={`${playing || playRequested ? 'Pause' : 'Play'} ${track.title}`}
               >
-                {playing ? 'Ⅱ' : '▶'}
+                {playing || playRequested ? 'Ⅱ' : '▶'}
               </button>
               <div>
                 <input
@@ -200,7 +249,7 @@ export default function AudioArchive({ dialogRef }) {
                   <span>{String(index + 1).padStart(2, '0')}</span>
                   <strong>{item.title}</strong>
                   <em>{item.credit}</em>
-                  <b>{index === active && playing ? 'PAUSE' : 'PLAY'}</b>
+                  <b>{index === active && (playing || playRequested) ? 'PAUSE' : 'PLAY'}</b>
                 </button>
               </li>
             ))}

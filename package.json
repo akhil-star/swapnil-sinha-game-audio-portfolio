@@ -9,9 +9,10 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "build": "vite build",
+    "build": "npm run verify:media && vite build",
     "preview": "vite preview",
-    "fetch:media": "node scripts/fetch-media.mjs"
+    "fetch:media": "node scripts/fetch-media.mjs",
+    "verify:media": "node scripts/verify-media.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
