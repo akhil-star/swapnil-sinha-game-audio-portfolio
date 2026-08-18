@@ -15,7 +15,7 @@ The portfolio is intentionally a client-only Vite + React application. Its conte
 flowchart LR
   Browser[Browser] --> App[React component sections]
   App --> Data[Static project and experience data]
-  App --> Media[Lazy local images and load-on-play audio]
+  App --> Media[Lazy local images and progressively preloaded audio]
   App --> External[YouTube, game stores, LinkedIn, email]
   Build[Vite build] --> Static[Static hosting / CDN]
   Static --> Browser
@@ -36,7 +36,7 @@ There are no serverless functions or database in the current product. If a conta
 
 - YouTube videos use local posters and connect only after the visitor presses Play.
 - Non-critical images lazy-load and retry transient CDN failures before showing a manual fallback.
-- Large audio files use `preload="none"` and load only when requested.
+- The active track in each player preloads opportunistically; the remaining large archive files load only when selected.
 - Audio failures produce both inline status and a dismissible global notice.
 - Missing images render a readable fallback instead of a broken-image icon.
 - Visible focus styles, reduced-motion handling, semantic controls, descriptive image alternatives, and native dialog keyboard behavior are included.
@@ -55,7 +55,7 @@ AI assistance was used to assemble and refine component styling, transform the s
 
 ## Media policy
 
-Only compressed, published samples belong in `public/`. Lossless masters and long-form source media should remain outside the deployed site. Images are compressed, audio loads on demand, and YouTube hosts video reels.
+Only compressed, published samples belong in `public/`. Lossless masters and long-form source media should remain outside the deployed site. Images are compressed, audio loads on demand, YouTube hosts the reel embeds, and the supplied Rahasya case-study demo is served as a local MP4.
 
 | Location                    | Purpose                                                        |
 | --------------------------- | -------------------------------------------------------------- |
@@ -65,6 +65,10 @@ Only compressed, published samples belong in `public/`. Lossless masters and lon
 | `src/data/experience.js`    | Experience and education                                       |
 | `public/audio/`             | Published, load-on-play audio                                  |
 | `public/artwork/`           | Optimized site artwork                                         |
+| `public/cursors/`           | Small theme-specific pointer assets                            |
+| `public/media/`             | Project imagery, reel posters, and case-study video            |
+| `public/resume/`            | Current downloadable résumé                                    |
+| `public/tool-logos/`        | Local toolchain logos                                          |
 
 ## Commands
 
@@ -76,3 +80,4 @@ Only compressed, published samples belong in `public/`. Lossless masters and lon
 | `npm run preview`      | Serve the production build locally                        |
 | `npm run format:check` | Verify formatting without changing files                  |
 | `npm run fetch:media`  | Download store imagery into `public/media/` when required |
+| `npm run verify:media` | Validate public folders, file signatures, and references  |

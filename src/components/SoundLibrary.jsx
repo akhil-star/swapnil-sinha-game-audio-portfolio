@@ -40,8 +40,10 @@ const samples = [
 
 function Sample({ title, category, src, note, loopable }) {
   const audioRef = useRef(null)
+  const playIntentRef = useRef(false)
   const { requestPlay } = useSound()
   const [playing, setPlaying] = useState(false)
+  const [playRequested, setPlayRequested] = useState(false)
   const [progress, setProgress] = useState(0)
   const [duration, setDuration] = useState(0)
   const [currentTime, setCurrentTime] = useState(0)
@@ -49,15 +51,30 @@ function Sample({ title, category, src, note, loopable }) {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [looping, setLooping] = useState(false)
+  const setPlayIntent = (next) => {
+    playIntentRef.current = next
+    setPlayRequested(next)
+  }
   const toggle = async () => {
     const audio = audioRef.current
-    if (!audio.paused) return audio.pause()
+    if (playIntentRef.current || !audio.paused) {
+      setPlayIntent(false)
+      setLoading(false)
+      audio.pause()
+      return
+    }
     audio.volume = volume
     setError('')
+    setPlayIntent(true)
     setLoading(true)
     try {
-      await requestPlay(audio)
+      const started = await requestPlay(audio)
+      if (!started && playIntentRef.current) {
+        setPlayIntent(false)
+        setLoading(false)
+      }
     } catch {
+      setPlayIntent(false)
       setPlaying(false)
       setError('Audio unavailable.')
       setLoading(false)
@@ -70,15 +87,20 @@ function Sample({ title, category, src, note, loopable }) {
       <audio
         ref={audioRef}
         src={src}
-        preload="none"
+        preload="metadata"
         onLoadedMetadata={(e) => {
           setDuration(e.currentTarget.duration)
-          setLoading(false)
+          if (!playIntentRef.current) setLoading(false)
         }}
-        onCanPlay={() => setLoading(false)}
+        onCanPlay={() => {
+          if (!playIntentRef.current) setLoading(false)
+        }}
+        onWaiting={() => {
+          if (playIntentRef.current) setLoading(true)
+        }}
         onError={() => {
-          setError('Audio unavailable.')
           setLoading(false)
+          if (playIntentRef.current) setError('Audio unavailable.')
         }}
         onTimeUpdate={(e) => {
           setCurrentTime(e.currentTarget.currentTime)
@@ -87,11 +109,18 @@ function Sample({ title, category, src, note, loopable }) {
           )
         }}
         onPlay={() => {
+          setPlayIntent(true)
           setPlaying(true)
           setLoading(false)
         }}
-        onPause={() => setPlaying(false)}
+        onPlaying={() => setLoading(false)}
+        onPause={() => {
+          setPlayIntent(false)
+          setPlaying(false)
+          setLoading(false)
+        }}
         onEnded={() => {
+          setPlayIntent(false)
           setPlaying(false)
           setCurrentTime(0)
           setProgress(0)
@@ -152,9 +181,10 @@ function Sample({ title, category, src, note, loopable }) {
           className="transport transport--primary"
           data-sonic="stone"
           onClick={toggle}
-          aria-label={`${playing ? 'Pause' : 'Play'} ${title}`}
+          aria-pressed={playing || playRequested}
+          aria-label={`${playing || playRequested ? 'Pause' : 'Play'} ${title}`}
         >
-          {playing ? 'Ⅱ' : '▶'}
+          {playing || playRequested ? 'Ⅱ' : '▶'}
         </button>
         <button
           className="transport"

@@ -1,18 +1,13 @@
 /**
  * Shipped work.
  *
- * `media` URLs were pulled from the live Steam and Google Play listings for
- * each title. They point at the stores' CDNs, which is fine for a portfolio,
- * but store CDN paths do rotate when a developer re-uploads assets.
+ * Every displayed image is served from /public/media. Remote store URLs are
+ * retained only as source references for the media-fetching script; the site
+ * never depends on those third-party URLs at runtime.
  *
- * Run `npm run fetch:media` once to download every remote image into
- * /public/media, then flip USE_LOCAL_MEDIA to true. After that the site is
- * fully self-hosted and nothing can 404 on you during an interview.
+ * Run `npm run fetch:media` to restore any missing local source image.
  */
-export const USE_LOCAL_MEDIA = true
-
-export const resolveMedia = (remoteUrl, localName) =>
-  USE_LOCAL_MEDIA ? assetPath(`media/${localName}`) : remoteUrl
+export const resolveMedia = (_remoteUrl, localName) => assetPath(`media/${localName}`)
 
 export const projects = [
   {
@@ -28,8 +23,10 @@ export const projects = [
     accent: 'cyan',
     href: 'https://store.steampowered.com/app/4280830/Rahasya/',
     hrefLabel: 'View on Steam',
-    trailerHref: 'https://youtu.be/D3ceONBRG4Q?si=XqjGxwuxmcMYyn_2',
-    trailerVideoId: 'D3ceONBRG4Q',
+    demoVideo: {
+      src: assetPath('media/rahasya-demo.mp4'),
+      caption: 'Rahasya — sound design, original score and implementation demo',
+    },
     summary:
       'Full audio direction on a horror title with no combat. The player cannot fight the entity hunting them, so audio carries the entire threat model — where it is, whether it heard you, and how close it is to finding you.',
     cardSummary:
@@ -128,17 +125,17 @@ export const projects = [
       shots: [
         {
           remote: '',
-          local: 'battlebucks-shot-03.jpg',
+          local: 'battlebucks-shot-03.png',
           caption: 'Games available across the BattleBucks platform',
         },
         {
           remote: '',
-          local: 'battlebucks-official-04.jpg',
+          local: 'battlebucks-official-04.png',
           caption: 'Competitive arena screen',
         },
         {
           remote: '',
-          local: 'battlebucks-official-05.jpg',
+          local: 'battlebucks-official-05.png',
           caption: 'Leaderboard and player screen',
         },
       ],
@@ -204,4 +201,4 @@ export const projects = [
 
 export const featuredProject = projects.find((p) => p.featured) ?? projects[0]
 export const otherProjects = projects.filter((p) => !p.featured)
-import { assetPath } from '../utils/assets'
+import { assetPath } from '../utils/assets.js'

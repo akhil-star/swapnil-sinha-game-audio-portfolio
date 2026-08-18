@@ -5,7 +5,16 @@ export default function WorldBackdrop() {
 
   useEffect(() => {
     const backdrop = backdropRef.current
-    if (!backdrop || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const root = document.documentElement
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
+    const memory = Number(navigator.deviceMemory || 8)
+    const cores = Number(navigator.hardwareConcurrency || 8)
+    const lowPower = memory <= 4 || cores <= 4
+
+    root.classList.toggle('performance-lite', lowPower)
+    if (!backdrop || reducedMotion || lowPower) {
+      return () => root.classList.remove('performance-lite')
+    }
 
     let frame = 0
     const update = () => {
@@ -24,6 +33,7 @@ export default function WorldBackdrop() {
       cancelAnimationFrame(frame)
       removeEventListener('scroll', onScroll)
       removeEventListener('resize', onScroll)
+      root.classList.remove('performance-lite')
     }
   }, [])
 

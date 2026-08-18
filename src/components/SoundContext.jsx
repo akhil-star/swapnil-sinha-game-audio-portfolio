@@ -73,10 +73,24 @@ export function SoundProvider({ children }) {
       if (activeMedia.current && activeMedia.current !== media) activeMedia.current.pause()
       activeMedia.current = media
       media.muted = false
+      // A failed background metadata request can leave the media element in an
+      // error state even though the file is healthy. A direct user action gets
+      // one clean load before playback so transient preload failures recover.
+      if (media.error) media.load()
       try {
         await media.play()
+        return true
       } catch (error) {
-        notify('Audio could not be played. Check your connection and try again.')
+        // A pending play promise is expected to abort when the visitor pauses or
+        // changes tracks before buffering completes. Treat that as a state
+        // transition, not a playback failure.
+        if (error?.name === 'AbortError') return false
+        if (activeMedia.current === media) activeMedia.current = null
+        notify(
+          error?.name === 'NotAllowedError'
+            ? 'Your browser blocked playback. Press play once more to continue.'
+            : 'Audio could not be played. Check your connection and try again.',
+        )
         throw error
       }
     },
@@ -117,8 +131,8 @@ export function SoundProvider({ children }) {
     <SoundContext.Provider value={value}>
       <audio
         ref={ambienceRef}
-        src={assetPath('audio/cigarettes-after-sex-sunsetz-cover.m4a')}
-        preload="none"
+        src={assetPath('audio/mixing-mastering/sunsetz-cover.m4a')}
+        preload="metadata"
         loop
         aria-hidden="true"
       />

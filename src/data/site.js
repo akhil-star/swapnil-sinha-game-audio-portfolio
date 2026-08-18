@@ -1,4 +1,4 @@
-import { assetPath } from '../utils/assets'
+import { assetPath } from '../utils/assets.js'
 
 /**
  * Identity, contact and top-level links.

@@ -5,15 +5,19 @@ import { assetPath } from '../utils/assets'
 import { links } from '../data/site'
 
 const tracks = [
-  ['Beat_01', 'e-ionian.mp3'],
-  ['Beat_02', 'plus-minus.mp3'],
-  ['DayDreamer — New Chapter', 'daydreamer-new-chapter.mp3'],
-  ['A Walk', 'a-walk.mp3'],
-  ['Drown', 'drown.mp3'],
-  ['Tera Jahan', 'tera-jahan.mp3'],
-  ['Flip the Sample', 'flip-the-sample.mp3'],
-  ['DayDreamer — 555', 'daydreamer-555.mp3'],
-].map(([title, file]) => ({ title, src: assetPath(`audio/music-production/${file}`) }))
+  ['E Ionian', 'e-ionian.mp3', 'Original composition + production'],
+  ['Plus / Minus', 'plus-minus.mp3', 'Original composition + production'],
+  ['DayDreamer — New Chapter', 'daydreamer-new-chapter.mp3', 'Original composition + production'],
+  ['A Walk', 'a-walk.mp3', 'Original composition + production'],
+  ['Drown', 'drown.mp3', 'Original composition + production'],
+  ['Tera Jahan', 'tera-jahan.mp3', 'Original composition + production'],
+  ['Flip the Sample', 'flip-the-sample.mp3', 'Sample-based production'],
+  ['DayDreamer — 555', 'daydreamer-555.mp3', 'Original composition + production'],
+].map(([title, file, credit]) => ({
+  title,
+  credit,
+  src: assetPath(`audio/music-production/${file}`),
+}))
 
 const formatTime = (seconds) =>
   Number.isFinite(seconds)
@@ -22,9 +26,12 @@ const formatTime = (seconds) =>
 
 export default function MusicProduction() {
   const audioRef = useRef(null)
+  const playIntentRef = useRef(false)
+  const switchingTrackRef = useRef(false)
   const { requestPlay } = useSound()
   const [active, setActive] = useState(0)
   const [playing, setPlaying] = useState(false)
+  const [playRequested, setPlayRequested] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const [volume, setVolume] = useState(0.8)
@@ -32,8 +39,23 @@ export default function MusicProduction() {
   const [loading, setLoading] = useState(false)
   const track = tracks[active]
 
+  const setPlayIntent = (next) => {
+    playIntentRef.current = next
+    setPlayRequested(next)
+  }
+
+  const pause = () => {
+    switchingTrackRef.current = false
+    setPlayIntent(false)
+    setLoading(false)
+    setStatus('PAUSED')
+    audioRef.current.pause()
+  }
+
   const selectTrack = async (index, autoplay = true) => {
     const audio = audioRef.current
+    switchingTrackRef.current = true
+    setPlayIntent(false)
     audio.pause()
     setActive(index)
     setCurrentTime(0)
@@ -44,24 +66,45 @@ export default function MusicProduction() {
     audio.volume = volume
     audio.load()
     if (autoplay) {
+      setPlayIntent(true)
       try {
-        await requestPlay(audio)
+        const started = await requestPlay(audio)
+        if (!started && playIntentRef.current) {
+          switchingTrackRef.current = false
+          setPlayIntent(false)
+          setLoading(false)
+          setStatus('PRESS PLAY')
+        }
       } catch {
+        switchingTrackRef.current = false
+        setPlayIntent(false)
         setLoading(false)
         setStatus('PRESS PLAY')
       }
+    } else {
+      switchingTrackRef.current = false
     }
   }
 
   const toggle = async () => {
     const audio = audioRef.current
-    if (!audio.paused) return audio.pause()
+    if (playIntentRef.current || !audio.paused) {
+      pause()
+      return
+    }
     audio.volume = volume
+    setPlayIntent(true)
     setStatus('LOADING')
     setLoading(true)
     try {
-      await requestPlay(audio)
+      const started = await requestPlay(audio)
+      if (!started && playIntentRef.current) {
+        setPlayIntent(false)
+        setLoading(false)
+        setStatus('PRESS PLAY')
+      }
     } catch {
+      setPlayIntent(false)
       setLoading(false)
       setStatus('AUDIO UNAVAILABLE')
     }
@@ -83,18 +126,22 @@ export default function MusicProduction() {
       <div className="retro-deck" data-reveal>
         <audio
           ref={audioRef}
-          src={track.src}
-          preload="none"
+          src={tracks[0].src}
+          preload="metadata"
           onLoadStart={() => {
             setLoading(true)
             setStatus('LOADING')
           }}
           onPlay={() => {
+            switchingTrackRef.current = false
+            setPlayIntent(true)
             setPlaying(true)
             setLoading(false)
             setStatus('PLAYING')
           }}
           onPlaying={() => {
+            switchingTrackRef.current = false
+            setPlayIntent(true)
             setPlaying(true)
             setLoading(false)
             setStatus('PLAYING')
@@ -104,24 +151,35 @@ export default function MusicProduction() {
             setStatus('BUFFERING')
           }}
           onCanPlay={(event) => {
-            setLoading(false)
-            if (event.currentTarget.paused) setStatus('READY')
+            if (!playIntentRef.current) {
+              setLoading(false)
+              if (event.currentTarget.paused) setStatus('READY')
+            }
           }}
           onPause={() => {
             setPlaying(false)
-            setLoading(false)
-            setStatus('PAUSED')
+            if (!switchingTrackRef.current) {
+              setPlayIntent(false)
+              setLoading(false)
+              setStatus('PAUSED')
+            }
           }}
           onLoadedMetadata={(event) => {
             setDuration(event.currentTarget.duration)
-            if (event.currentTarget.paused) setStatus('READY')
+            if (event.currentTarget.paused && !playIntentRef.current) setStatus('READY')
           }}
           onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)}
           onEnded={() => selectTrack((active + 1) % tracks.length)}
           onError={() => {
+            switchingTrackRef.current = false
             setPlaying(false)
             setLoading(false)
-            setStatus('AUDIO UNAVAILABLE')
+            if (playIntentRef.current) {
+              setPlayIntent(false)
+              setStatus('AUDIO UNAVAILABLE')
+            } else {
+              setStatus('READY')
+            }
           }}
         />
         <div className="retro-deck__topbar">
@@ -135,6 +193,7 @@ export default function MusicProduction() {
               <span>STEREO</span>
             </div>
             <h3>{track.title}</h3>
+            <p className="retro-screen__credit">{track.credit}</p>
             <div className={playing ? 'deck-spectrum is-live' : 'deck-spectrum'} aria-hidden="true">
               {Array.from({ length: 24 }, (_, index) => (
                 <i key={index} />
@@ -171,10 +230,10 @@ export default function MusicProduction() {
               className="retro-controls__play"
               data-sonic="stone"
               onClick={toggle}
-              aria-pressed={playing}
-              aria-label={`${playing ? 'Pause' : 'Play'} ${track.title}`}
+              aria-pressed={playing || playRequested}
+              aria-label={`${playing || playRequested ? 'Pause' : 'Play'} ${track.title}`}
             >
-              {playing ? 'Ⅱ' : '▶'}
+              {playing || playRequested ? 'Ⅱ' : '▶'}
             </button>
             <button
               data-sonic="stone"
@@ -191,6 +250,7 @@ export default function MusicProduction() {
                 max="1"
                 step="0.05"
                 value={volume}
+                aria-label="Music production volume"
                 onChange={(event) => {
                   const next = Number(event.target.value)
                   setVolume(next)
@@ -205,10 +265,13 @@ export default function MusicProduction() {
             <li key={item.src} className={index === active ? 'is-active' : ''}>
               <button onClick={() => activateTrack(index)}>
                 <span>{String(index + 1).padStart(2, '0')}</span>
-                <strong>{item.title}</strong>
+                <span className="retro-playlist__track">
+                  <strong>{item.title}</strong>
+                  <small>{item.credit}</small>
+                </span>
                 <em>
                   {index === active
-                    ? loading
+                    ? loading && playRequested
                       ? 'LOADING'
                       : playing
                         ? 'PLAYING'
