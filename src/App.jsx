@@ -13,6 +13,7 @@ import CapturedWorks from './components/CapturedWorks'
 import Experience from './components/Experience'
 import Contact from './components/Contact'
 import WorldBackdrop from './components/WorldBackdrop'
+import AncientCursor from './components/AncientCursor'
 
 function Page() {
   const root = useReveal()
@@ -20,6 +21,7 @@ function Page() {
     <SoundProvider>
       <div ref={root}>
         <WorldBackdrop />
+        <AncientCursor />
         <Nav />
         <main>
           <Hero />
