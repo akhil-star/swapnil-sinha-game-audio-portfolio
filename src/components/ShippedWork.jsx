@@ -3,8 +3,171 @@ import { Section, ModuleHeader, Chips, MediaImage } from './ui'
 import { projects, resolveMedia } from '../data/projects'
 import { useSound } from './SoundContext'
 
+const formatTime = (seconds) =>
+  Number.isFinite(seconds)
+    ? `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`
+    : '0:00'
+
+function CaseAudioPlayer({ showcase }) {
+  const audioRef = useRef(null)
+  const playIntentRef = useRef(false)
+  const { requestPlay } = useSound()
+  const [active, setActive] = useState(0)
+  const [playing, setPlaying] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [currentTime, setCurrentTime] = useState(0)
+  const [duration, setDuration] = useState(0)
+  const [error, setError] = useState('')
+  const track = showcase.tracks[active]
+
+  const setPlayIntent = (next) => {
+    playIntentRef.current = next
+  }
+
+  const pause = () => {
+    setPlayIntent(false)
+    setLoading(false)
+    audioRef.current?.pause()
+  }
+
+  const start = async () => {
+    const audio = audioRef.current
+    if (!audio) return
+    setError('')
+    setPlayIntent(true)
+    setLoading(true)
+    try {
+      const started = await requestPlay(audio)
+      if (!started && playIntentRef.current) {
+        setPlayIntent(false)
+        setLoading(false)
+      }
+    } catch {
+      setPlayIntent(false)
+      setLoading(false)
+      setError('AUDIO UNAVAILABLE')
+    }
+  }
+
+  const toggle = () => {
+    if (playIntentRef.current || !audioRef.current?.paused) {
+      pause()
+      return
+    }
+    void start()
+  }
+
+  const selectTrack = async (index) => {
+    if (index === active) {
+      toggle()
+      return
+    }
+
+    const audio = audioRef.current
+    if (!audio) return
+    pause()
+    setActive(index)
+    setCurrentTime(0)
+    setDuration(0)
+    setError('')
+    audio.src = showcase.tracks[index].src
+    audio.load()
+    await start()
+  }
+
+  return (
+    <section className="case-audio" aria-labelledby="case-audio-title">
+      <audio
+        ref={audioRef}
+        src={showcase.tracks[0].src}
+        preload="metadata"
+        onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)}
+        onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)}
+        onPlay={() => {
+          setPlayIntent(true)
+          setPlaying(true)
+          setLoading(false)
+        }}
+        onPlaying={() => {
+          setPlaying(true)
+          setLoading(false)
+        }}
+        onWaiting={() => {
+          if (playIntentRef.current) setLoading(true)
+        }}
+        onPause={() => {
+          setPlayIntent(false)
+          setPlaying(false)
+          setLoading(false)
+        }}
+        onEnded={() => void selectTrack((active + 1) % showcase.tracks.length)}
+        onError={() => {
+          setPlayIntent(false)
+          setPlaying(false)
+          setLoading(false)
+          setError('AUDIO UNAVAILABLE')
+        }}
+      />
+      <header className="case-audio__header">
+        <div>
+          <span className="field-label">PLAYABLE MUSIC SHOWCASE</span>
+          <h3 id="case-audio-title">{showcase.title}</h3>
+        </div>
+        <span>{showcase.tracks.length} TRACKS</span>
+      </header>
+      <p className="case-audio__credit">{showcase.credit}</p>
+      <div className="case-audio__transport">
+        <button
+          type="button"
+          data-sonic="stone"
+          onClick={toggle}
+          aria-pressed={playing || loading}
+          aria-label={`${playing || loading ? 'Pause' : 'Play'} ${track.title}`}
+        >
+          {playing || loading ? 'Ⅱ' : '▶'}
+        </button>
+        <div>
+          <strong>{track.title}</strong>
+          <span aria-live="polite">
+            {error || (loading ? 'LOADING' : playing ? 'PLAYING' : 'READY')}
+          </span>
+        </div>
+        <span>{formatTime(currentTime)}</span>
+      </div>
+      <input
+        className="case-audio__seek"
+        type="range"
+        min="0"
+        max={duration || 0}
+        step="0.01"
+        value={Math.min(currentTime, duration || 0)}
+        disabled={!duration}
+        aria-label={`Seek ${track.title}`}
+        onChange={(event) => {
+          const next = Number(event.target.value)
+          audioRef.current.currentTime = next
+          setCurrentTime(next)
+        }}
+      />
+      <ol className="case-audio__playlist">
+        {showcase.tracks.map((item, index) => (
+          <li key={item.src} className={index === active ? 'is-active' : ''}>
+            <button type="button" onClick={() => void selectTrack(index)}>
+              <span>{String(index + 1).padStart(2, '0')}</span>
+              <strong>{item.title}</strong>
+              <span>{index === active && playing ? 'PLAYING' : item.duration}</span>
+            </button>
+          </li>
+        ))}
+      </ol>
+    </section>
+  )
+}
+
 function ProjectCard({ project, index, onOpen }) {
   const previewRef = useRef(null)
+  const { requestPlay } = useSound()
+  const [previewSoundOn, setPreviewSoundOn] = useState(false)
   const shots = project.media?.shots ?? []
   const shot = shots[0]
   const hasGallery = shots.length > 1
@@ -14,14 +177,34 @@ function ProjectCard({ project, index, onOpen }) {
   const playPreview = () => {
     const preview = previewRef.current
     if (!preview || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    preview.muted = !previewSoundOn
+    preview.volume = 0.72
     preview.play().catch(() => {})
   }
 
   const pausePreview = () => {
     const preview = previewRef.current
     if (!preview) return
+    preview.muted = true
     preview.pause()
     preview.currentTime = 0
+    setPreviewSoundOn(false)
+  }
+
+  const togglePreviewSound = async () => {
+    const preview = previewRef.current
+    if (!preview) return
+    const next = !previewSoundOn
+    preview.muted = !next
+    preview.volume = 0.72
+    setPreviewSoundOn(next)
+    if (!next) return
+    try {
+      await requestPlay(preview)
+    } catch {
+      preview.muted = true
+      setPreviewSoundOn(false)
+    }
   }
 
   return (
@@ -82,10 +265,27 @@ function ProjectCard({ project, index, onOpen }) {
           )
         )}
         {hasVideoPreview && (
-          <span className="proj__preview-cue">
-            <span className="proj__preview-cue--hover">HOVER TO PREVIEW · FULL AUDIO INSIDE</span>
-            <span className="proj__preview-cue--touch">PLAY DEMO INSIDE</span>
-          </span>
+          <>
+            <span className="proj__preview-cue">
+              <span className="proj__preview-cue--hover">HOVER TO PREVIEW</span>
+              <span className="proj__preview-cue--touch">PLAY DEMO INSIDE</span>
+            </span>
+            <button
+              type="button"
+              className={`proj__preview-audio ${previewSoundOn ? 'is-on' : ''}`}
+              data-sonic="silent"
+              aria-pressed={previewSoundOn}
+              aria-label={`${previewSoundOn ? 'Mute' : 'Hear'} Rahasya thumbnail preview`}
+              onClick={togglePreviewSound}
+            >
+              <span className="proj__preview-audio-icon" aria-hidden="true">
+                <i />
+                <i />
+                <i />
+              </span>
+              <span>PREVIEW SOUND {previewSoundOn ? 'ON' : 'OFF'}</span>
+            </button>
+          </>
         )}
         {!project.featured && (
           <div className="proj__hover-detail">
@@ -116,6 +316,17 @@ function ProjectCard({ project, index, onOpen }) {
         <div>
           <span className="field-label">AUDIO ROLE + SCOPE</span>
           <p className="proj__text">{project.cardSummary}</p>
+          {project.audioShowcase && (
+            <button
+              type="button"
+              className="proj__listen-cue"
+              data-sonic="stone"
+              onClick={() => onOpen(project)}
+            >
+              <span aria-hidden="true">▶</span>
+              LISTEN TO {project.audioShowcase.tracks.length} BATTLEBUCKS TRACKS
+            </button>
+          )}
         </div>
         <Chips items={project.stack} />
         <div className="proj__foot">
@@ -124,7 +335,10 @@ function ProjectCard({ project, index, onOpen }) {
             type="button"
             className="game-link game-link--button"
             data-sonic="stone"
-            onClick={() => onOpen(project)}
+            onClick={() => {
+              if (hasVideoPreview) pausePreview()
+              onOpen(project)
+            }}
           >
             OPEN CASE FILE ↗
           </button>
@@ -185,7 +399,7 @@ export default function ShippedWork() {
           ref={dialogRef}
           aria-labelledby="project-file-title"
           onClose={(event) => {
-            event.currentTarget.querySelectorAll('video').forEach((video) => video.pause())
+            event.currentTarget.querySelectorAll('audio, video').forEach((media) => media.pause())
           }}
         >
           <div className="project-file__shell">
@@ -248,6 +462,9 @@ export default function ShippedWork() {
               </div>
               <aside className="project-file__details">
                 <span className="field-label">{selected.role.join(' · ')}</span>
+                {selected.audioShowcase && (
+                  <CaseAudioPlayer key={selected.id} showcase={selected.audioShowcase} />
+                )}
                 <h3>Audio brief</h3>
                 <p>{selected.summary}</p>
                 <h4>Selected contributions</h4>

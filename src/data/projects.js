@@ -115,6 +115,52 @@ export const projects = [
       'One sonic language across a launcher hosting multiple hypercasual titles. Each game needs its own character while sharing UI, reward and tournament sounds so the platform feels like a single product.',
     cardSummary:
       'Sound and music across multiple mobile games, implemented with developers in Unity.',
+    audioShowcase: {
+      title: 'Music from BattleBucks',
+      credit: 'Original game music composed and produced by Swapnil Sinha.',
+      tracks: [
+        {
+          title: 'BitBounce',
+          src: assetPath('audio/battlebucks/bit-bounce.m4a'),
+          duration: '1:49',
+        },
+        {
+          title: 'Galactic Glide',
+          src: assetPath('audio/battlebucks/galactic-glide.m4a'),
+          duration: '2:10',
+        },
+        {
+          title: 'HungryShadow',
+          src: assetPath('audio/battlebucks/hungry-shadow.m4a'),
+          duration: '2:43',
+        },
+        {
+          title: 'Sawblades — City Base',
+          src: assetPath('audio/battlebucks/sawblades-city-base.m4a'),
+          duration: '1:55',
+        },
+        {
+          title: 'Sawblades — City God Mode',
+          src: assetPath('audio/battlebucks/sawblades-city-god-mode.m4a'),
+          duration: '0:57',
+        },
+        {
+          title: 'Sawblades — Egypt God Mode',
+          src: assetPath('audio/battlebucks/sawblades-egypt-god-mode.m4a'),
+          duration: '1:28',
+        },
+        {
+          title: 'SlingDrift',
+          src: assetPath('audio/battlebucks/sling-drift.m4a'),
+          duration: '2:58',
+        },
+        {
+          title: 'Unannounced',
+          src: assetPath('audio/battlebucks/unannounced.m4a'),
+          duration: '1:13',
+        },
+      ],
+    },
     media: {
       layout: 'portrait',
       icon: {

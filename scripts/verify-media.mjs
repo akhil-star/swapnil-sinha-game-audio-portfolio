@@ -24,6 +24,9 @@ for (const project of projects) {
       new URL(project.demoVideo.src, 'https://portfolio.local/').pathname.replace(/^\//, ''),
     )
   }
+  for (const track of project.audioShowcase?.tracks ?? []) {
+    required.add(new URL(track.src, 'https://portfolio.local/').pathname.replace(/^\//, ''))
+  }
   for (const shot of project.media?.shots ?? []) required.add(`media/${shot.local}`)
 }
 
