@@ -3786,6 +3786,23 @@ main::before {
   .ancient-cursor__orbit {
     display: block;
   }
+  .ancient-cursor-enabled.ancient-cursor-suspended,
+  .ancient-cursor-enabled.ancient-cursor-suspended body,
+  .ancient-cursor-enabled.ancient-cursor-suspended input,
+  .ancient-cursor-enabled.ancient-cursor-suspended label,
+  .ancient-cursor-enabled.ancient-cursor-suspended select,
+  .ancient-cursor-enabled.ancient-cursor-suspended textarea {
+    cursor: auto !important;
+  }
+  .ancient-cursor-enabled.ancient-cursor-suspended a,
+  .ancient-cursor-enabled.ancient-cursor-suspended button,
+  .ancient-cursor-enabled.ancient-cursor-suspended [role='button'] {
+    cursor: pointer !important;
+  }
+  .ancient-cursor-enabled.ancient-cursor-suspended .ancient-cursor,
+  .ancient-cursor-enabled.ancient-cursor-suspended .ancient-cursor__orbit {
+    display: none;
+  }
 }
 .btn,
 .game-link--button {
@@ -4528,6 +4545,146 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .proj__hover-detail {
     transition: none;
+  }
+}
+
+/* BattleBucks keeps the existing case-card hierarchy while surfacing the
+   attached game music before a recruiter reaches the longer project notes. */
+.proj__listen-cue {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 38px;
+  margin-top: 14px;
+  padding: 9px 12px;
+  border: 1px solid rgba(166, 215, 91, 0.34);
+  background: rgba(166, 215, 91, 0.1);
+  color: var(--signal);
+  font: 700 9px/1.35 var(--mono);
+  letter-spacing: 0.08em;
+  text-align: left;
+}
+.proj__listen-cue:hover,
+.proj__listen-cue:focus-visible {
+  border-color: var(--signal);
+  background: rgba(166, 215, 91, 0.16);
+  color: var(--text);
+}
+.case-audio {
+  margin: 18px 0 30px;
+  padding: 16px;
+  border: 1px solid rgba(166, 215, 91, 0.25);
+  background:
+    repeating-linear-gradient(0deg, transparent 0 4px, rgba(166, 215, 91, 0.018) 5px),
+    rgba(3, 9, 4, 0.72);
+}
+.case-audio__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 16px;
+}
+.project-file__details .case-audio__header h3 {
+  margin: 7px 0 0;
+  font: 400 clamp(25px, 2.5vw, 34px)/1 var(--display);
+}
+.case-audio__header > span {
+  flex: 0 0 auto;
+  color: var(--signal);
+  font: 700 8px/1 var(--mono);
+  letter-spacing: 0.1em;
+}
+.project-file__details .case-audio__credit {
+  margin: 12px 0 15px;
+  font-size: 11px;
+  line-height: 1.45;
+}
+.case-audio__transport {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid rgba(166, 215, 91, 0.18);
+  background: rgba(166, 215, 91, 0.055);
+}
+.case-audio__transport button {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 1px solid rgba(166, 215, 91, 0.42);
+  background: var(--signal);
+  color: #11180b;
+}
+.case-audio__transport div {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+.case-audio__transport strong {
+  overflow: hidden;
+  color: var(--text);
+  font: 700 10px/1.25 var(--mono);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.case-audio__transport span {
+  color: var(--dimmer);
+  font: 600 8px/1 var(--mono);
+  letter-spacing: 0.08em;
+}
+.case-audio__seek {
+  width: 100%;
+  margin: 5px 0 2px;
+  accent-color: var(--signal);
+}
+.case-audio__playlist {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.case-audio__playlist li {
+  margin: 0;
+}
+.case-audio__playlist button {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 36px;
+  padding: 7px 9px;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.025);
+  text-align: left;
+}
+.case-audio__playlist button:hover,
+.case-audio__playlist button:focus-visible,
+.case-audio__playlist li.is-active button {
+  border-color: rgba(166, 215, 91, 0.22);
+  background: rgba(166, 215, 91, 0.08);
+}
+.project-file__details .case-audio__playlist span {
+  color: var(--dimmer);
+  font: 600 8px/1 var(--mono);
+  letter-spacing: 0.06em;
+}
+.case-audio__playlist strong {
+  overflow: hidden;
+  color: var(--dim);
+  font: 600 9px/1.25 var(--mono);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.case-audio__playlist li.is-active strong {
+  color: var(--text);
+}
+@media (max-width: 760px) {
+  .case-audio {
+    margin-top: 16px;
+    padding: 14px;
   }
 }
 

@@ -68,6 +68,12 @@ export default function AncientCursor() {
       orbit.classList.remove('is-visible')
       handleUp()
     }
+    const syncDialogState = () => {
+      const dialogOpen = Boolean(document.querySelector('dialog[open]'))
+      root.classList.toggle('ancient-cursor-suspended', dialogOpen)
+      if (dialogOpen) handleLeave()
+    }
+    const dialogObserver = new MutationObserver(syncDialogState)
 
     document.addEventListener('pointermove', handleMove, { passive: true })
     document.addEventListener('pointerdown', handleDown, { passive: true })
@@ -75,10 +81,17 @@ export default function AncientCursor() {
     document.addEventListener('pointercancel', handleUp, { passive: true })
     document.documentElement.addEventListener('mouseleave', handleLeave)
     window.addEventListener('blur', handleLeave)
+    dialogObserver.observe(document.body, {
+      attributes: true,
+      attributeFilter: ['open'],
+      subtree: true,
+    })
+    syncDialogState()
     frame = requestAnimationFrame(render)
 
     return () => {
       cancelAnimationFrame(frame)
+      dialogObserver.disconnect()
       document.removeEventListener('pointermove', handleMove)
       document.removeEventListener('pointerdown', handleDown)
       document.removeEventListener('pointerup', handleUp)
@@ -86,6 +99,7 @@ export default function AncientCursor() {
       document.documentElement.removeEventListener('mouseleave', handleLeave)
       window.removeEventListener('blur', handleLeave)
       root.classList.remove('ancient-cursor-enabled')
+      root.classList.remove('ancient-cursor-suspended')
     }
   }, [])
 
